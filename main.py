@@ -166,7 +166,8 @@ class ChessboardDemo(ShowBase):
             self.pieces[to].obj.setPos(SquarePos(to))
 
     # TODO: function to capture piece
-    #def capturePiece(selfself, fr, to):
+    #def capturePiece(self, fr, to):
+
 
 
     def mouseTask(self, task):
