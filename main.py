@@ -187,11 +187,9 @@ class ChessboardDemo(ShowBase):
             self.pieces[to].square = to
             self.pieces[to].obj.setPos(SquarePos(to))
 
-        #videoFile = "captures/" + KillerColor + KillerName + "K" + KilledName + ".mkv"
+        captureVideo = KillerColor + KillerName + "K" + KilledName
         try:
-            #video = VideoFileClip(videoFile)
-            #video.set_fps(24)
-            video.preview()
+            videos[captureVideo].preview()
         except:
             print("Video not yet made")
         pygame.quit()
@@ -256,7 +254,6 @@ class ChessboardDemo(ShowBase):
             # We have let go of the piece, but we are not on a square
             if self.hiSq is False:
                 #Piece is moved out of bounds, return it to prevous square
-                print("Out of bounds\n")
                 self.pieces[self.dragging].obj.setPos(
                     SquarePos(self.dragging))
 
@@ -264,7 +261,6 @@ class ChessboardDemo(ShowBase):
             else:
                 #Piece has moved to a valid square
                 # Check if we have moved to a square with a piece on it already
-                print("Valid square\n")
                 if(self.pieces[self.hiSq] is None):
                     self.swapPieces(self.dragging, self.hiSq)
                 else:
@@ -331,10 +327,28 @@ class Rook(Piece):
     model = "models/rook"
     PieceName = "Rook"
 
-# Do the main initialization and start 3D rendering
 pygame.init()
-#videoFile = "captures/" + KillerColor + KillerName + "K" + KilledName + ".mkv"
-video = VideoFileClip("captures/BKnightKPawn.mkv")
-video.set_fps(24)
+
+#TODO find better way to store video files, potentially in seperate file
+videos = {}
+def setupVideos():
+    for i in range(0, 6):
+        AllNames = {0: "Pawn", 1: "King", 2: "Queen", 3: "Bishop", 4: "Knight", 5: "Rook"}
+        for ii in range(0, 6):
+            try:
+                videoFile = "captures/" + "B" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
+                videosIndex = "B" + AllNames[i] + "K" + AllNames[ii]
+                videos[videosIndex] = VideoFileClip(videoFile)
+                videos[videosIndex].set_fps(24)
+
+                videoFile = "captures/" + "W" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
+                videosIndex = "W" + AllNames[i] + "K" + AllNames[ii]
+                videos[videosIndex] = VideoFileClip(videoFile)
+                videos[videosIndex].set_fps(24)
+            except:
+                print("Video not found")
+
+setupVideos()
 demo = ChessboardDemo()
 demo.run()
+print(videos)
