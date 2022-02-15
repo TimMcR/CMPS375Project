@@ -15,10 +15,14 @@ from panda3d.core import CollisionHandlerQueue, CollisionRay
 from panda3d.core import AmbientLight, DirectionalLight, LightAttrib
 from panda3d.core import TextNode
 from panda3d.core import LPoint3, LVector3, BitMask32
+from panda3d.core import MovieTexture
 from direct.gui.OnscreenText import OnscreenText
 from direct.showbase.DirectObject import DirectObject
 from direct.task.Task import Task
 import sys
+
+from moviepy.editor import *
+import pygame
 
 # Colors
 SQUAREBLACK = (0, 0, 0, 1)
@@ -132,15 +136,15 @@ class ChessboardDemo(ShowBase):
 
         for i in range(8, 16):
             # Load the white pawns
-            self.pieces[i] = Pawn(i, PIECEWHITE)
+            self.pieces[i] = Pawn(i, PIECEWHITE, "W")
         for i in range(48, 56):
             # load the black pawns
-            self.pieces[i] = Pawn(i, PIECEBLACK)
+            self.pieces[i] = Pawn(i, PIECEBLACK, "B")
         for i in range(8):
             # Load the special pieces for the front row and color them white
-            self.pieces[i] = pieceOrder[i](i, PIECEWHITE)
+            self.pieces[i] = pieceOrder[i](i, PIECEWHITE, "W")
             # Load the special pieces for the back row and color them black
-            self.pieces[i + 56] = pieceOrder[i](i + 56, PIECEBLACK)
+            self.pieces[i + 56] = pieceOrder[i](i + 56, PIECEBLACK, "B")
 
         # This will represent the index of the currently highlited square
         self.hiSq = False
@@ -165,9 +169,32 @@ class ChessboardDemo(ShowBase):
             self.pieces[to].square = to
             self.pieces[to].obj.setPos(SquarePos(to))
 
-    # TODO: function to capture piece
-    #def capturePiece(self, fr, to):
+    # Function captures a piece
+    #TODO play movie when piece is captured
+    def capturePieces(self, fr, to):
+        #2/14/22
+        #Moves a piece to an occupied square and deletes the piece
+        #Plays basic animation at the moment
 
+        KillerColor = self.pieces[fr].PieceColor
+        KillerName = self.pieces[fr].PieceName
+        KilledName = self.pieces[to].PieceName
+
+        self.pieces[to].obj.hide()
+        self.pieces[to] = self.pieces[fr]
+        self.pieces[fr] = None
+        if self.pieces[to]:
+            self.pieces[to].square = to
+            self.pieces[to].obj.setPos(SquarePos(to))
+
+        #videoFile = "captures/" + KillerColor + KillerName + "K" + KilledName + ".mkv"
+        try:
+            #video = VideoFileClip(videoFile)
+            #video.set_fps(24)
+            video.preview()
+        except:
+            print("Video not yet made")
+        pygame.quit()
 
 
     def mouseTask(self, task):
@@ -228,11 +255,21 @@ class ChessboardDemo(ShowBase):
         if self.dragging is not False:
             # We have let go of the piece, but we are not on a square
             if self.hiSq is False:
+                #Piece is moved out of bounds, return it to prevous square
+                print("Out of bounds\n")
                 self.pieces[self.dragging].obj.setPos(
                     SquarePos(self.dragging))
+
+
             else:
-                # Otherwise, swap the pieces
-                self.swapPieces(self.dragging, self.hiSq)
+                #Piece has moved to a valid square
+                # Check if we have moved to a square with a piece on it already
+                print("Valid square\n")
+                if(self.pieces[self.hiSq] is None):
+                    self.swapPieces(self.dragging, self.hiSq)
+                else:
+                    self.capturePieces(self.dragging, self.hiSq)
+
 
         # We are no longer dragging anything
         self.dragging = False
@@ -250,11 +287,17 @@ class ChessboardDemo(ShowBase):
 # Class for a piece. This just handles loading the model and setting initial
 # position and color
 class Piece(object):
-    def __init__(self, square, color):
+
+    PieceName = ""
+    PieceColor = ""
+
+    def __init__(self, square, color, ColorName):
         self.obj = loader.loadModel(self.model)
         self.obj.reparentTo(render)
         self.obj.setColor(color)
         self.obj.setPos(SquarePos(square))
+        self.PieceColor = ColorName
+
 
 
 # Classes for each type of chess piece
@@ -262,24 +305,36 @@ class Piece(object):
 # But if you wanted to make rules for how the pieces move, a good place to start
 # would be to make an isValidMove(toSquare) method for each piece type
 # and then check if the destination square is acceptible during ReleasePiece
+
+#TODO replace models with current BLender models
 class Pawn(Piece):
     model = "models/pawn"
+    PieceName = "Pawn"
 
 class King(Piece):
     model = "models/king"
+    PieceName = "King"
 
 class Queen(Piece):
     model = "models/queen"
+    PieceName = "Queen"
 
 class Bishop(Piece):
     model = "models/bishop"
+    PieceName = "Bishop"
 
 class Knight(Piece):
     model = "models/knight"
+    PieceName = "Knight"
 
 class Rook(Piece):
     model = "models/rook"
+    PieceName = "Rook"
 
 # Do the main initialization and start 3D rendering
+pygame.init()
+#videoFile = "captures/" + KillerColor + KillerName + "K" + KilledName + ".mkv"
+video = VideoFileClip("captures/BKnightKPawn.mkv")
+video.set_fps(24)
 demo = ChessboardDemo()
 demo.run()
