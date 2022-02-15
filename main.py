@@ -12,17 +12,18 @@
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import CollisionTraverser, CollisionNode
 from panda3d.core import CollisionHandlerQueue, CollisionRay
-from panda3d.core import AmbientLight, DirectionalLight, LightAttrib
+from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
 from panda3d.core import LPoint3, LVector3, BitMask32
-from panda3d.core import MovieTexture
 from direct.gui.OnscreenText import OnscreenText
-from direct.showbase.DirectObject import DirectObject
 from direct.task.Task import Task
-import sys
 
 from moviepy.editor import *
 import pygame
+
+#import sys
+#from direct.showbase.DirectObject import DirectObject
+#from panda3d.core import LightAttrib
 
 # Colors
 SQUAREBLACK = (0, 0, 0, 1)
@@ -279,9 +280,7 @@ class ChessboardDemo(ShowBase):
         render.setLight(render.attachNewNode(directionalLight))
         render.setLight(render.attachNewNode(ambientLight))
 
-
-# Class for a piece. This just handles loading the model and setting initial
-# position and color
+# Superclass for a piece
 class Piece(object):
 
     PieceName = ""
@@ -294,13 +293,7 @@ class Piece(object):
         self.obj.setPos(SquarePos(square))
         self.PieceColor = ColorName
 
-
-
 # Classes for each type of chess piece
-# Obviously, we could have done this by just passing a string to Piece's init.
-# But if you wanted to make rules for how the pieces move, a good place to start
-# would be to make an isValidMove(toSquare) method for each piece type
-# and then check if the destination square is acceptible during ReleasePiece
 
 #TODO replace models with current BLender models
 class Pawn(Piece):
@@ -327,13 +320,11 @@ class Rook(Piece):
     model = "models/rook"
     PieceName = "Rook"
 
-pygame.init()
-
-#TODO find better way to store video files, potentially in seperate file
+#TODO once all videos have been made, store these videos in a premade dictionary
 videos = {}
 def setupVideos():
+    AllNames = {0: "Pawn", 1: "King", 2: "Queen", 3: "Bishop", 4: "Knight", 5: "Rook"}
     for i in range(0, 6):
-        AllNames = {0: "Pawn", 1: "King", 2: "Queen", 3: "Bishop", 4: "Knight", 5: "Rook"}
         for ii in range(0, 6):
             try:
                 videoFile = "captures/" + "B" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
@@ -348,7 +339,9 @@ def setupVideos():
             except:
                 print("Video not found")
 
-setupVideos()
-demo = ChessboardDemo()
-demo.run()
-print(videos)
+def runGame():
+    setupVideos()
+    demo = ChessboardDemo()
+    demo.run()
+
+runGame()
