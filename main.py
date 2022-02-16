@@ -9,6 +9,24 @@
 # and points straight into the scene, and see what it collides with. We pick
 # the object with the closest collision
 
+
+# -----------------------------------
+#This section of code is for installing specific libraries not included in python
+#If libraries are already installed, comment out runInstall()
+
+import os
+
+def runInstall():
+    print("Installing needed libraries")
+    os.system("pip install panda3d")
+    os.system("pip install pygame")
+    os.system("pip install moviepy")
+
+#runInstall()
+
+# -----------------------------------
+
+
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import CollisionTraverser, CollisionNode
 from panda3d.core import CollisionHandlerQueue, CollisionRay
@@ -54,7 +72,6 @@ def SquareColor(i):
         return SQUAREBLACK
     else:
         return SQUAREWHITE
-
 
 class ChessboardDemo(ShowBase):
     def __init__(self):
@@ -171,7 +188,6 @@ class ChessboardDemo(ShowBase):
             self.pieces[to].obj.setPos(SquarePos(to))
 
     # Function captures a piece
-    #TODO play movie when piece is captured
     def capturePieces(self, fr, to):
         #2/14/22
         #Moves a piece to an occupied square and deletes the piece
@@ -194,7 +210,6 @@ class ChessboardDemo(ShowBase):
         except:
             print("Video not yet made")
         pygame.quit()
-
 
     def mouseTask(self, task):
         # This task deals with the highlighting and dragging based on the mouse
@@ -258,7 +273,6 @@ class ChessboardDemo(ShowBase):
                 self.pieces[self.dragging].obj.setPos(
                     SquarePos(self.dragging))
 
-
             else:
                 #Piece has moved to a valid square
                 # Check if we have moved to a square with a piece on it already
@@ -320,24 +334,26 @@ class Rook(Piece):
     model = "models/rook"
     PieceName = "Rook"
 
-#TODO once all videos have been made, store these videos in a premade dictionary
 videos = {}
 def setupVideos():
     AllNames = {0: "Pawn", 1: "King", 2: "Queen", 3: "Bishop", 4: "Knight", 5: "Rook"}
+    print("Loading capture animations")
     for i in range(0, 6):
         for ii in range(0, 6):
+            BVideoFile = "captures/" + "B" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
             try:
-                videoFile = "captures/" + "B" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
                 videosIndex = "B" + AllNames[i] + "K" + AllNames[ii]
-                videos[videosIndex] = VideoFileClip(videoFile)
-                videos[videosIndex].set_fps(24)
-
-                videoFile = "captures/" + "W" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
-                videosIndex = "W" + AllNames[i] + "K" + AllNames[ii]
-                videos[videosIndex] = VideoFileClip(videoFile)
+                videos[videosIndex] = VideoFileClip(BVideoFile)
                 videos[videosIndex].set_fps(24)
             except:
-                print("Video not found")
+                print(BVideoFile + " not found")
+            WVideoFile = "captures/" + "W" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
+            try:
+                videosIndex = "W" + AllNames[i] + "K" + AllNames[ii]
+                videos[videosIndex] = VideoFileClip(WVideoFile)
+                videos[videosIndex].set_fps(24)
+            except:
+                print(WVideoFile + " not found")
 
 def runGame():
     setupVideos()
