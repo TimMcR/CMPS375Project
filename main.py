@@ -16,6 +16,9 @@
 
 import os
 
+from direct.showbase.ShowBaseGlobal import render2d
+
+
 def runInstall():
     print("Installing needed libraries")
     os.system("pip install panda3d")
@@ -28,13 +31,15 @@ def runInstall():
 
 
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import CollisionTraverser, CollisionNode
+from panda3d.core import CollisionTraverser, CollisionNode, CardMaker
 from panda3d.core import CollisionHandlerQueue, CollisionRay
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
 from panda3d.core import LPoint3, LVector3, BitMask32
-from direct.gui.OnscreenText import OnscreenText
+from direct.gui.DirectGui import *
 from direct.task.Task import Task
+
+
 
 from moviepy.editor import *
 import pygame
@@ -174,6 +179,8 @@ class ChessboardDemo(ShowBase):
         self.mouseTask = taskMgr.add(self.mouseTask, 'mouseTask')
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
+
+        setupMenu()
 
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):
@@ -362,8 +369,23 @@ def setupVideos():
             else:
                 print(WVideoFile + " not found")
 
+
+menuImage = None
+#title = None
+
+def setText(status):
+    if status:
+        bk_text = "Checkbox Selected"
+    else:
+        bk_text = "Checkbox Not Selected"
+
+bk_text = "Demo"
+
+def setupMenu():
+    title = OnscreenText(text=bk_text)
+    b = DirectCheckButton(text="CheckButton", scale=.05, command=setText)
 def runGame():
-    setupVideos()
+    #setupVideos()
     demo = ChessboardDemo()
     demo.run()
 
