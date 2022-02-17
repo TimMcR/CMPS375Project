@@ -11,12 +11,12 @@
 
 
 # -----------------------------------
-#This section of code is for installing specific libraries not included in python
-#If libraries are already installed, comment out runInstall()
+# This section of code is for installing specific libraries not included in python
+# If libraries are already installed, comment out runInstall()
 
 import os
 
-from direct.showbase.ShowBaseGlobal import render2d
+#from direct.showbase.ShowBaseGlobal import render2d
 
 
 def runInstall():
@@ -39,21 +39,21 @@ from panda3d.core import LPoint3, LVector3, BitMask32
 from direct.gui.DirectGui import *
 from direct.task.Task import Task
 
-
-
 from moviepy.editor import *
 import pygame
 
-#import sys
+import sys
 #from direct.showbase.DirectObject import DirectObject
 #from panda3d.core import LightAttrib
 
 # Colors
 SQUAREBLACK = (0, 0, 0, 1)
 SQUAREWHITE = (1, 1, 1, 1)
-HIGHLIGHT = (0, 1, 1, 1)
+HIGHLIGHT1 = (0, 1, 1, 1)
+HIGHLIGHT2 = (1, 1, 0, 1)
 PIECEBLACK = (.15, .15, .15, 1)
 PIECEWHITE = (1, 1, 1, 1)
+
 
 # Now we define some helper functions that we will need later
 
@@ -84,11 +84,13 @@ class ChessboardDemo(ShowBase):
         # create a window and set up everything we need for rendering into it.
         ShowBase.__init__(self)
 
+        self.WhiteTurn = True
+
         # This code puts the standard title and instruction text on screen
-        self.title = OnscreenText(#text="Panda3D: Tutorial - Mouse Picking",
-                                  text="Chess 2",
-                                  style=1, fg=(1, 1, 1, 1), shadow=(0, 0, 0, 1),
-                                  pos=(0.8, -0.95), scale = .07)
+        self.title = OnscreenText(
+            text="Chess 2",
+            style=1, fg=(1, 1, 1, 1), shadow=(0, 0, 0, 1),
+            pos=(0.8, -0.95), scale = .07)
         self.escapeEvent = OnscreenText(
             text="ESC: Quit", parent=base.a2dTopLeft,
             style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.1),
@@ -99,7 +101,7 @@ class ChessboardDemo(ShowBase):
             style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.16), scale=.05)
 
         self.accept('escape', sys.exit)  # Escape quits
-        self.disableMouse()  # Disble mouse camera control
+        self.disableMouse()  # Disable mouse camera control
         camera.setPosHpr(0, -12, 8, 0, -35, 0)  # Set the camera
         self.setupLights()  # Setup default lighting
 
@@ -180,7 +182,28 @@ class ChessboardDemo(ShowBase):
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
 
-        setupMenu()
+        #self.setupMenu()
+
+    # TODO create basic startup menu
+    def setupMenu(self):
+
+        # Add some text
+        bk_text = "This is my Demo"
+        menuImage = OnscreenImage(image="images/Chess_Menu_Image.png")
+
+        textObject = OnscreenText(text=bk_text, pos=(0.95, -0.95), scale=0.07,
+                                  fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter,
+                                  mayChange=1)
+
+        # Callback function to set  text
+        def setText():
+            b.destroy()
+            menuImage.destroy()
+            textObject.destroy()
+
+        # Add button
+        b = DirectButton(text=("OK", "click!", "rolling over", "disabled"),
+                         scale=.05, command=setText)
 
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):
@@ -194,12 +217,8 @@ class ChessboardDemo(ShowBase):
             self.pieces[to].square = to
             self.pieces[to].obj.setPos(SquarePos(to))
 
-    # Function captures a piece
+    # This function captures a piece
     def capturePieces(self, fr, to):
-        #2/14/22
-        #Moves a piece to an occupied square and deletes the piece
-        #Plays basic animation at the moment
-
         KillerColor = self.pieces[fr].PieceColor
         KillerName = self.pieces[fr].PieceName
         KilledName = self.pieces[to].PieceName
@@ -211,12 +230,12 @@ class ChessboardDemo(ShowBase):
             self.pieces[to].square = to
             self.pieces[to].obj.setPos(SquarePos(to))
 
-        captureVideo = KillerColor + KillerName + "K" + KilledName
-        try:
-            videos[captureVideo].preview()
-        except:
+        CaptureVideo = KillerColor + KillerName + "K" + KilledName
+        if CaptureVideo in videos:
+            videos[CaptureVideo].preview()
+            pygame.quit()
+        else:
             print("Video not yet made")
-        pygame.quit()
 
     def mouseTask(self, task):
         # This task deals with the highlighting and dragging based on the mouse
@@ -257,7 +276,10 @@ class ChessboardDemo(ShowBase):
                 self.pq.sortEntries()
                 i = int(self.pq.getEntry(0).getIntoNode().getTag('square'))
                 # Set the highlight on the picked square
-                self.squares[i].setColor(HIGHLIGHT)
+                if self.WhiteTurn:
+                    self.squares[i].setColor(HIGHLIGHT1)
+                else:
+                    self.squares[i].setColor(HIGHLIGHT2)
                 self.hiSq = i
 
         return Task.cont
@@ -274,30 +296,40 @@ class ChessboardDemo(ShowBase):
         # position. Otherwise, swap it with the piece in the new square
         # Make sure we really are dragging something
         if self.dragging is not False:
-            # We have let go of the piece, but we are not on a square
-            if self.hiSq is False:
-                #Piece is moved out of bounds, return it to prevous square
+            # Check if the piece we are moving is allowed to move
+            CorrectColor = False
+            if self.WhiteTurn and self.pieces[self.dragging].PieceColor == "W":
+                CorrectColor = True
+            elif not self.WhiteTurn and self.pieces[self.dragging].PieceColor == "B":
+                CorrectColor = True
+
+            # Either we have let go of the piece but we are not on a square,
+            # or we have tried to move a piece when it is not their turn
+            if self.hiSq is False or CorrectColor is False:
+                # Piece is moved out of bounds, return it to old square
                 self.pieces[self.dragging].obj.setPos(
                     SquarePos(self.dragging))
 
             else:
-                #Piece has moved to a valid square
+                # Piece has moved to a valid square
                 # Check if we have moved to a square with a piece on it already
-                if(self.pieces[self.hiSq] is None):
+                if self.pieces[self.hiSq] is None:
                     self.swapPieces(self.dragging, self.hiSq)
+                    self.WhiteTurn = not self.WhiteTurn
                 else:
-                    #TODO check if a valid move mas been made
-                    if(self.pieces[self.dragging].PieceColor != self.pieces[self.hiSq].PieceColor):
+                    # TODO check if a valid move mas been made
+                    if self.pieces[self.dragging].PieceColor is not self.pieces[self.hiSq].PieceColor:
                         self.capturePieces(self.dragging, self.hiSq)
+                        self.WhiteTurn = not self.WhiteTurn
                     else:
                         self.pieces[self.dragging].obj.setPos(
                             SquarePos(self.dragging))
 
-
         # We are no longer dragging anything
         self.dragging = False
 
-    def setupLights(self):  # This function sets up some default lighting
+    # This function sets up some default lighting
+    def setupLights(self):
         ambientLight = AmbientLight("ambientLight")
         ambientLight.setColor((.8, .8, .8, 1))
         directionalLight = DirectionalLight("directionalLight")
@@ -308,7 +340,6 @@ class ChessboardDemo(ShowBase):
 
 # Superclass for a piece
 class Piece(object):
-
     PieceName = ""
     PieceColor = ""
 
@@ -353,40 +384,28 @@ def setupVideos():
     for i in range(0, 6):
         for ii in range(0, 6):
             BVideoFile = "captures/" + "B" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
-            #If the file exists then add it to the videos dictionary
-            if(os.path.isfile(BVideoFile)):
+            WVideoFile = "captures/" + "W" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
+            # If the file exists then add it to the videos dictionary
+            if os.path.isfile(BVideoFile):
                 videosIndex = "B" + AllNames[i] + "K" + AllNames[ii]
                 videos[videosIndex] = VideoFileClip(BVideoFile)
-                #videos[videosIndex].set_fps(24)
+                videos[videosIndex].set_fps(24)
             else:
                 print(BVideoFile + " not found")
-            WVideoFile = "captures/" + "W" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
-            #If the file exists then add it to the videos dictionary
-            if(os.path.isfile(WVideoFile)):
+            if os.path.isfile(WVideoFile):
                 videosIndex = "W" + AllNames[i] + "K" + AllNames[ii]
                 videos[videosIndex] = VideoFileClip(WVideoFile)
-                #videos[videosIndex].set_fps(24)
+                videos[videosIndex].set_fps(24)
             else:
                 print(WVideoFile + " not found")
+    print("Captures loaded")
 
-
-menuImage = None
-#title = None
-
-def setText(status):
-    if status:
-        bk_text = "Checkbox Selected"
-    else:
-        bk_text = "Checkbox Not Selected"
-
-bk_text = "Demo"
-
-def setupMenu():
-    title = OnscreenText(text=bk_text)
-    b = DirectCheckButton(text="CheckButton", scale=.05, command=setText)
 def runGame():
-    #setupVideos()
     demo = ChessboardDemo()
+    # Run demo step once to load window then load needed game resources
+    demo.taskMgr.step()
+    setupVideos()
+    # Continue running game
     demo.run()
 
 runGame()
