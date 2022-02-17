@@ -279,7 +279,12 @@ class ChessboardDemo(ShowBase):
                 if(self.pieces[self.hiSq] is None):
                     self.swapPieces(self.dragging, self.hiSq)
                 else:
-                    self.capturePieces(self.dragging, self.hiSq)
+                    #TODO check if a valid move mas been made
+                    if(self.pieces[self.dragging].PieceColor != self.pieces[self.hiSq].PieceColor):
+                        self.capturePieces(self.dragging, self.hiSq)
+                    else:
+                        self.pieces[self.dragging].obj.setPos(
+                            SquarePos(self.dragging))
 
 
         # We are no longer dragging anything
@@ -341,18 +346,20 @@ def setupVideos():
     for i in range(0, 6):
         for ii in range(0, 6):
             BVideoFile = "captures/" + "B" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
-            try:
+            #If the file exists then add it to the videos dictionary
+            if(os.path.isfile(BVideoFile)):
                 videosIndex = "B" + AllNames[i] + "K" + AllNames[ii]
                 videos[videosIndex] = VideoFileClip(BVideoFile)
-                videos[videosIndex].set_fps(24)
-            except:
+                #videos[videosIndex].set_fps(24)
+            else:
                 print(BVideoFile + " not found")
             WVideoFile = "captures/" + "W" + AllNames[i] + "K" + AllNames[ii] + ".mkv"
-            try:
+            #If the file exists then add it to the videos dictionary
+            if(os.path.isfile(WVideoFile)):
                 videosIndex = "W" + AllNames[i] + "K" + AllNames[ii]
                 videos[videosIndex] = VideoFileClip(WVideoFile)
-                videos[videosIndex].set_fps(24)
-            except:
+                #videos[videosIndex].set_fps(24)
+            else:
                 print(WVideoFile + " not found")
 
 def runGame():
