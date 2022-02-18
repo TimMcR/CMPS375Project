@@ -50,7 +50,7 @@ import sys
 SQUAREBLACK = (0, 0, 0, 1)
 SQUAREWHITE = (1, 1, 1, 1)
 HIGHLIGHT1 = (0, 1, 1, 1)
-HIGHLIGHT2 = (1, 1, 0, 1)
+HIGHLIGHT2 = (1, 0, 1, 1)
 PIECEBLACK = (.15, .15, .15, 1)
 PIECEWHITE = (1, 1, 1, 1)
 
@@ -80,12 +80,36 @@ def SquareColor(i):
 
 class ChessboardDemo(ShowBase):
     def __init__(self):
+        ShowBase.__init__(self)
+        #self.setupMenu()
+
+        # TODO create basic startup menu
+        self.menuImage = OnscreenImage(image="images/Chess_Menu_Image.png", scale=1.5)
+
+        self.menuText = OnscreenText(text="CHESS 2", pos=(0.95, -0.95), scale=0.07,
+                                  fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter,
+                                  mayChange=1)
+
+        # Callback function to close the menu and start the Chess game
+
+        # Add button
+        self.menuButton = DirectButton(text="START",
+                         scale=.05, command=self.closeMenu)
+        self.menuButton.hide()
+
+    def closeMenu(self):
+        self.menuButton.destroy()
+        self.menuImage.destroy()
+        self.menuText.destroy()
+        self.setupGame()
+
+    def showMenuButton(self):
+        self.menuButton.show()
+
+    def setupGame(self):
         # Initialize the ShowBase class from which we inherit, which will
         # create a window and set up everything we need for rendering into it.
-        ShowBase.__init__(self)
-
         self.WhiteTurn = True
-
         # This code puts the standard title and instruction text on screen
         self.title = OnscreenText(
             text="Chess 2",
@@ -182,29 +206,6 @@ class ChessboardDemo(ShowBase):
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
 
-        #self.setupMenu()
-
-    # TODO create basic startup menu
-    def setupMenu(self):
-
-        # Add some text
-        bk_text = "This is my Demo"
-        menuImage = OnscreenImage(image="images/Chess_Menu_Image.png")
-
-        textObject = OnscreenText(text=bk_text, pos=(0.95, -0.95), scale=0.07,
-                                  fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter,
-                                  mayChange=1)
-
-        # Callback function to set  text
-        def setText():
-            b.destroy()
-            menuImage.destroy()
-            textObject.destroy()
-
-        # Add button
-        b = DirectButton(text=("OK", "click!", "rolling over", "disabled"),
-                         scale=.05, command=setText)
-
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):
         temp = self.pieces[fr]
@@ -298,15 +299,16 @@ class ChessboardDemo(ShowBase):
         if self.dragging is not False:
             # Check if the piece we are moving is allowed to move
             CorrectColor = False
-            if self.WhiteTurn and self.pieces[self.dragging].PieceColor == "W":
+            IsWhite = self.pieces[self.dragging].PieceColor == "W"
+            if self.WhiteTurn and IsWhite:
                 CorrectColor = True
-            elif not self.WhiteTurn and self.pieces[self.dragging].PieceColor == "B":
+            elif not self.WhiteTurn and not IsWhite:
                 CorrectColor = True
 
             # Either we have let go of the piece but we are not on a square,
             # or we have tried to move a piece when it is not their turn
             if self.hiSq is False or CorrectColor is False:
-                # Piece is moved out of bounds, return it to old square
+                # Return piece to previous square
                 self.pieces[self.dragging].obj.setPos(
                     SquarePos(self.dragging))
 
@@ -398,13 +400,18 @@ def setupVideos():
                 videos[videosIndex].set_fps(24)
             else:
                 print(WVideoFile + " not found")
+
     print("Captures loaded")
 
 def runGame():
+    #Start up the game then load in the menu
     demo = ChessboardDemo()
-    # Run demo step once to load window then load needed game resources
-    demo.taskMgr.step()
+    # Run demo step twice to load the menu then load needed game resources
+    for i in range(2):
+        demo.taskMgr.step()
     setupVideos()
+    # Once the videos have been loaded we can reveal the button to load the chess game
+    demo.showMenuButton()
     # Continue running game
     demo.run()
 
