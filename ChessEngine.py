@@ -51,14 +51,16 @@ import sys
 #from direct.showbase.DirectObject import DirectObject
 #from panda3d.core import LightAttrib
 
-# Colors
-SQUAREBLACK = (0, 0, 0, 1)
-SQUAREWHITE = (1, 1, 1, 1)
-HIGHLIGHT1 = (0, 1, 1, 1)
-HIGHLIGHT2 = (1, 0, 1, 1)
-PIECEBLACK = (.15, .15, .15, 1)
-PIECEWHITE = (1, 1, 1, 1)
+def convertRGB(red, green, blue):
+    return (red/255, green/255, blue/255, 1)
 
+# Colors
+SQUAREBLACK = convertRGB(139, 69, 16)
+SQUAREWHITE = convertRGB(255, 248, 220)
+HIGHLIGHT1 = convertRGB(0, 255, 255)
+HIGHLIGHT2 = convertRGB(255, 0, 255)
+PIECEBLACK = convertRGB(0, 0, 0)
+PIECEWHITE = convertRGB(255, 255, 255)
 
 # Now we define some helper functions that we will need later
 
@@ -338,33 +340,22 @@ class ChessGame(ShowBase):
             else:
                 # Piece has moved to a valid square
                 # Check if we have moved to a square with a piece on it already
-                if self.pieces[self.hiSq] is None:
-                    #startPosition = SquarePos(self.dragging)
-                    #endPosition = SquarePos(self.hiSq)
-
-                    #jumpHeight = 1
-                    #moveSpeed = .5
-                    #middlePosition = CenterPos(startPosition, endPosition, jumpHeight)
-
-                    #movePiece1 = self.pieces[self.dragging].obj.posInterval(moveSpeed, middlePosition, startPos=startPosition)
-                    #movePiece2 = self.pieces[self.dragging].obj.posInterval(moveSpeed, endPosition, startPos=middlePosition)
-
-                    #moveAnimation = Sequence(movePiece1, movePiece2)
-                    if(self.pieces[self.dragging].MoveAnimation is not None):
-                        self.pieces[self.dragging].MoveAnimation.start()
-
-                    #print("Start Square x = ", startPosition.getX(), ", y = ", startPosition.getY())
-                    #print("End  Square x = ", endPosition.getX(), ", y = ", endPosition.getY())
+                DragPiece = self.pieces[self.dragging]
+                HitPiece = self.pieces[self.hiSq]
+                if HitPiece is None:
+                    startPosition = SquarePos(self.dragging)
+                    endPosition = SquarePos(self.hiSq)
+                    if(DragPiece.HasAnimation):
+                        DragPiece.runAnimation(startPosition, endPosition)
 
                     self.swapPieces(self.dragging, self.hiSq)
                     self.WhiteTurn = not self.WhiteTurn
-
                 else:
-                    if self.pieces[self.dragging].PieceColor is not self.pieces[self.hiSq].PieceColor:
+                    if DragPiece.PieceColor is not HitPiece.PieceColor:
                         self.capturePieces(self.dragging, self.hiSq)
                         self.WhiteTurn = not self.WhiteTurn
                     else:
-                        self.pieces[self.dragging].obj.setPos(
+                        DragPiece.obj.setPos(
                             SquarePos(self.dragging))
 
         # We are no longer dragging anything
@@ -407,48 +398,65 @@ class ChessGame(ShowBase):
 class Piece(object):
     PieceName = ""
     PieceColor = ""
-    MoveAnimation = None
+    HasAnimation = False
 
     def __init__(self, square, color, ColorName):
         #self.obj = loader.loadModel(self.model)
-        self.obj = Actor(self.model, {})
+        self.obj = Actor(self.model, self.animations)
         self.obj.reparentTo(render)
         self.obj.setColor(color)
         self.obj.setPos(SquarePos(square))
         self.PieceColor = ColorName
 
-# Classes for each type of chess piece
+    def runAnimation(self, StartPosition, EndPosition):
+        print("No move animation made yet")
 
+# Example animation
+#startPosition = SquarePos(self.dragging)
+#endPosition = SquarePos(self.hiSq)
+
+#jumpHeight = 1
+#moveSpeed = .5
+#middlePosition = CenterPos(startPosition, endPosition, jumpHeight)
+
+#movePiece1 = self.pieces[self.dragging].obj.posInterval(moveSpeed, middlePosition, startPos=startPosition)
+#movePiece2 = self.pieces[self.dragging].obj.posInterval(moveSpeed, endPosition, startPos=middlePosition)
+
+#moveAnimation = Sequence(movePiece1, movePiece2)
+
+# Classes for each type of chess piece
 class Pawn(Piece):
     model = "models/pawn"
+    HasAnimation = True
+    animations = {}
     PieceName = "Pawn"
+
+    def runAnimation(self, StartPosition, EndPosition):
+        moveSpeed = 1
+        movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
+        movePiece1.start()
 
 class King(Piece):
     model = "models/king"
+    animations = {}
     PieceName = "King"
 
 class Queen(Piece):
     model = "models/queen"
+    animations = {}
     PieceName = "Queen"
 
 class Bishop(Piece):
     model = "models/bishop"
+    animations = {}
     PieceName = "Bishop"
 
 class Knight(Piece):
     model = "models/knight"
+    animations = {}
     PieceName = "Knight"
 
 class Rook(Piece):
     model = "models/rook"
+    animations = {}
     PieceName = "Rook"
-
-def runGame():
-    #Start up the game then load in the menu
-    demo = ChessGame()
-    demo.setupMenu()
-    #setupVideos()
-    # Once the videos have been loaded we can reveal the button to load the chess game
-    demo.showMenuButton()
-    # Continue running game
-    demo.run()
