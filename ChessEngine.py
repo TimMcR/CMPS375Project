@@ -393,6 +393,7 @@ class ChessGame(ShowBase):
                     print(WVideoFile + " not found")
 
         print("Captures loaded")
+        self.showMenuButton()
 
 # Superclass for a piece
 class Piece(object):
