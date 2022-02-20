@@ -409,6 +409,8 @@ class Piece(object):
         self.obj.setColor(color)
         self.obj.setPos(SquarePos(square))
         self.PieceColor = ColorName
+        if(ColorName == "B"):
+            self.obj.setH(180)
 
     def runAnimation(self, StartPosition, EndPosition):
         print("No move animation made yet")
@@ -428,13 +430,21 @@ class Piece(object):
 
 # Classes for each type of chess piece
 class Pawn(Piece):
-    model = "models/pawn"
+    model = "models/Pawn"
     HasAnimation = True
-    animations = {}
+    animations = {"Jump": "models/Pawn-Jump", "Trot": "models/Pawn-Trot"}
     PieceName = "Pawn"
 
     def runAnimation(self, StartPosition, EndPosition):
-        moveSpeed = 1
+        moveSpeed = .1
+        moved = abs(EndPosition.getY() - StartPosition.getY())
+        if moved == 2:
+            self.obj.play("Jump")
+            moveSpeed = 1
+        elif moved == 1:
+            self.obj.play("Trot")
+            moveSpeed = 1.4
+
         movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
         movePiece1.start()
 
@@ -444,9 +454,16 @@ class King(Piece):
     PieceName = "King"
 
 class Queen(Piece):
-    model = "models/queen"
-    animations = {}
+    model = "models/Queen"
+    HasAnimation = True
+    animations = {"Jump": "models/Queen-Jump", "Forward": "models/Queen-TestForward"}
     PieceName = "Queen"
+
+    def runAnimation(self, StartPosition, EndPosition):
+        #self.obj.play("Forward")
+        moveSpeed = .2
+        movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
+        movePiece1.start()
 
 class Bishop(Piece):
     model = "models/bishop"
