@@ -104,7 +104,7 @@ class ChessGame(ShowBase):
 
     # Run just to set up menu without start button
     def setupMenuWait(self):
-        self.menuImage = OnscreenImage(image="images/Chess_Menu_Image.png", scale=1.5)
+        self.menuImage = OnscreenImage(image="images/Chess_Menu_Image.png", scale=1.4)
 
         self.menuText = OnscreenText(text="CHESS 2", pos=(0.95, -0.95), scale=0.07,
                                      fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter,
@@ -230,6 +230,7 @@ class ChessGame(ShowBase):
         self.mouseTask = taskMgr.add(self.mouseTask, 'mouseTask')
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
+
 
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):

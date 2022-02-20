@@ -12,5 +12,5 @@ game = eng.ChessGame()
 
 game.setupMenuWait()
 game.setupVideos()
-
 game.run()
+
