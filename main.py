@@ -8,9 +8,9 @@ game = eng.ChessGame()
 
 # If we want to load the videos then run setUpMenuWait then setupVideos
 # Otherwise just load setupMenuReady
-game.setupMenuReady()
+#game.setupMenuReady()
 
-#game.setupMenuWait()
-#game.setupVideos()
+game.setupMenuWait()
+game.setupVideos()
 game.run()
 

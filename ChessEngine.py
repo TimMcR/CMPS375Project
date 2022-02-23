@@ -41,6 +41,8 @@ from direct.gui.DirectGui import *
 from direct.task.Task import Task
 from direct.actor.Actor import Actor
 from direct.interval.MetaInterval import Sequence
+from direct.interval.IntervalGlobal import *
+
 
 #from . import Interval
 
@@ -435,17 +437,20 @@ class Pawn(Piece):
     animations = {"Jump": "models/Pawn-Jump", "Trot": "models/Pawn-Trot"}
     PieceName = "Pawn"
 
-    def runAnimation(self, StartPosition, EndPosition):
-        moveSpeed = .1
-        moved = abs(EndPosition.getY() - StartPosition.getY())
-        if moved == 2:
-            self.obj.play("Jump")
-            moveSpeed = 1
-        elif moved == 1:
-            self.obj.play("Trot")
-            moveSpeed = 1.4
 
-        movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
+
+    def runAnimation(self, StartPosition, EndPosition):
+        # Time it takes for something to occur in seconds
+        moveTime = .1
+        movedY = abs(EndPosition.getY() - StartPosition.getY())
+        if movedY == 2:
+            self.obj.play("Jump")
+            moveTime = 1
+        elif movedY == 1:
+            self.obj.play("Trot")
+            moveTime = 1.4
+
+        movePiece1 = self.obj.posInterval(moveTime, EndPosition, startPos=StartPosition)
         movePiece1.start()
 
 class King(Piece):
@@ -456,7 +461,7 @@ class King(Piece):
 class Queen(Piece):
     model = "models/Queen"
     HasAnimation = True
-    animations = {"Jump": "models/Queen-Jump", "Forward": "models/Queen-TestForward"}
+    animations = {"Jump": "models/Queen-Jump"}
     PieceName = "Queen"
 
     def runAnimation(self, StartPosition, EndPosition):
@@ -476,6 +481,16 @@ class Knight(Piece):
     PieceName = "Knight"
 
 class Rook(Piece):
-    model = "models/rook"
-    animations = {}
+    model = "models/Rook"
+    animations = {"Curl_Up": "models/Rook-Curl_Up", "Curl_Out": "models/Rook-Curl_Out"}
+    HasAnimation = True
     PieceName = "Rook"
+
+    def runAnimation(self, StartPosition, EndPosition):
+        moveSpeed = 1
+        pausePiece = self.obj.posInterval(.1, StartPosition, startPos=StartPosition)
+        movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
+        Start_Curl = self.obj.actorInterval("Curl_Up")
+        End_Curl = self.obj.actorInterval("Curl_Out")
+        Seq = Sequence(pausePiece, Start_Curl, Wait(.1), movePiece1, End_Curl)
+        Seq.start()
