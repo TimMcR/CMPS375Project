@@ -61,8 +61,8 @@ SQUAREBLACK = convertRGB(139, 69, 16)
 SQUAREWHITE = convertRGB(255, 248, 220)
 HIGHLIGHT1 = convertRGB(0, 255, 255)
 HIGHLIGHT2 = convertRGB(255, 0, 255)
-PIECEBLACK = convertRGB(0, 0, 0)
-PIECEWHITE = convertRGB(255, 255, 255)
+PIECEBLACK = convertRGB(61, 43, 31)
+PIECEWHITE = convertRGB(253, 245, 230)
 
 # Now we define some helper functions that we will need later
 
@@ -106,14 +106,15 @@ class ChessGame(ShowBase):
 
     # Run just to set up menu without start button
     def setupMenuWait(self):
-        self.menuImage = OnscreenImage(image="images/Chess_Menu_Image.png", scale=1.4)
+        self.menuImage = OnscreenImage(image="images/Chess_Menu_Image.png", scale=1)
 
-        self.menuText = OnscreenText(text="CHESS 2", pos=(0.95, -0.95), scale=0.07,
-                                     fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter,
+        self.menuText = OnscreenText(text="CHESS 2", pos=(0, .85), scale=0.1,
+                                     fg=(1, 0, 0, 1), align=TextNode.ACenter,
                                      mayChange=1)
 
-        self.menuButton = DirectButton(text="START",
-                                       scale=.05, command=self.closeMenu)
+        self.menuButton = DirectButton(text="START", pos=(0, 0, -.7),
+                                       text_bg=(1, 0, 0, 1), text_fg = (1, 1, 1, 1), frameColor=(0, 0, 0, 0),
+                                       scale=.1, command=self.closeMenu)
         self.menuButton.hide()
 
         # Step twice to properly load start menu
@@ -138,18 +139,18 @@ class ChessGame(ShowBase):
         # create a window and set up everything we need for rendering into it.
         self.WhiteTurn = True
         # This code puts the standard title and instruction text on screen
-        self.title = OnscreenText(
-            text="Chess 2",
-            style=1, fg=(1, 1, 1, 1), shadow=(0, 0, 0, 1),
-            pos=(0.8, -0.95), scale = .07)
-        self.escapeEvent = OnscreenText(
-            text="ESC: Quit", parent=base.a2dTopLeft,
-            style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.1),
-            align=TextNode.ALeft, scale = .05)
-        self.mouse1Event = OnscreenText(
-            text="Left-click and drag: Pick up and drag piece",
-            parent=base.a2dTopLeft, align=TextNode.ALeft,
-            style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.16), scale=.05)
+        #self.title = OnscreenText(
+        #    text="Chess 2",
+        #    style=1, fg=(1, 1, 1, 1), shadow=(0, 0, 0, 1),
+        #    pos=(0.8, -0.95), scale = .07)
+        #self.escapeEvent = OnscreenText(
+        #    text="ESC: Quit", parent=base.a2dTopLeft,
+        #    style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.1),
+        #    align=TextNode.ALeft, scale = .05)
+        #self.mouse1Event = OnscreenText(
+        #    text="Left-click and drag: Pick up and drag piece",
+        #    parent=base.a2dTopLeft, align=TextNode.ALeft,
+        #    style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.16), scale=.05)
 
         self.accept('escape', sys.exit)  # Escape quits
         self.disableMouse()  # Disable mouse camera control
