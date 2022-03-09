@@ -1,7 +1,5 @@
 # TODO create basic startup menu
 # TODO check if a valid move mas been made
-# TODO replace models with current Blender models
-# TODO make basic moving animations for each piece
 
 #!/usr/bin/env python
 
@@ -14,23 +12,6 @@
 # and points straight into the scene, and see what it collides with. We pick
 # the object with the closest collision
 
-
-# -----------------------------------
-# This section of code is for installing specific libraries not included in python
-# If libraries are already installed, comment out runInstall()
-import os
-
-def runInstall():
-    print("Installing needed libraries")
-    os.system("pip install panda3d")
-    os.system("pip install pygame")
-    os.system("pip install moviepy")
-
-#runInstall()
-
-# -----------------------------------
-
-
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import CollisionTraverser, CollisionNode, CardMaker
 from panda3d.core import CollisionHandlerQueue, CollisionRay
@@ -42,9 +23,6 @@ from direct.task.Task import Task
 from direct.actor.Actor import Actor
 from direct.interval.MetaInterval import Sequence
 from direct.interval.IntervalGlobal import *
-
-
-#from . import Interval
 
 from moviepy.editor import *
 import pygame
@@ -349,8 +327,7 @@ class ChessGame(ShowBase):
                 if HitPiece is None:
                     startPosition = SquarePos(self.dragging)
                     endPosition = SquarePos(self.hiSq)
-                    if(DragPiece.HasAnimation):
-                        DragPiece.runAnimation(startPosition, endPosition)
+                    DragPiece.runAnimation(startPosition, endPosition)
 
                     self.swapPieces(self.dragging, self.hiSq)
                     self.WhiteTurn = not self.WhiteTurn
@@ -434,11 +411,8 @@ class Piece(object):
 # Classes for each type of chess piece
 class Pawn(Piece):
     model = "models/Pawn"
-    HasAnimation = True
     animations = {"Jump": "models/Pawn-Jump", "Trot": "models/Pawn-Trot"}
     PieceName = "Pawn"
-
-
 
     def runAnimation(self, StartPosition, EndPosition):
         # Time it takes for something to occur in seconds
@@ -455,36 +429,56 @@ class Pawn(Piece):
         movePiece1.start()
 
 class King(Piece):
-    model = "models/king"
-    animations = {}
+    model = "models/King"
+    animations = {"Drop": "models/King-Drop"}
     PieceName = "King"
+
+    def runAnimation(self, StartPosition, EndPosition):
+        self.obj.play("Drop")
+        pausePiece = self.obj.posInterval(.01, StartPosition, startPos=StartPosition)
+        moveSpeed = 1
+        movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
+        Seq = Sequence(pausePiece, Wait(.5), movePiece1)
+        Seq.start()
 
 class Queen(Piece):
     model = "models/Queen"
-    HasAnimation = True
     animations = {"Jump": "models/Queen-Jump"}
     PieceName = "Queen"
 
     def runAnimation(self, StartPosition, EndPosition):
-        #self.obj.play("Forward")
+        #self.obj.play("Jump")
         moveSpeed = .2
         movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
         movePiece1.start()
 
 class Bishop(Piece):
-    model = "models/bishop"
-    animations = {}
+    model = "models/Bishop"
+    animations = {"Spin": "models/Bishop-Spin"}
     PieceName = "Bishop"
 
+    def runAnimation(self, StartPosition, EndPosition):
+        self.obj.play("Spin")
+        moveSpeed = 2.5
+        movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
+        movePiece1.start()
+
 class Knight(Piece):
-    model = "models/knight"
-    animations = {}
+    model = "models/Knight"
+    animations = {"Jump": "models/Knight-Jump"}
     PieceName = "Knight"
+
+    def runAnimation(self, StartPosition, EndPosition):
+        self.obj.play("Jump")
+        pausePiece = self.obj.posInterval(.1, StartPosition, startPos=StartPosition)
+        moveSpeed = .5
+        movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
+        Seq = Sequence(pausePiece, Wait(.5), movePiece1)
+        Seq.start()
 
 class Rook(Piece):
     model = "models/Rook"
     animations = {"Curl_Up": "models/Rook-Curl_Up", "Curl_Out": "models/Rook-Curl_Out"}
-    HasAnimation = True
     PieceName = "Rook"
 
     def runAnimation(self, StartPosition, EndPosition):
