@@ -13,7 +13,7 @@
 # the object with the closest collision
 
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import CollisionTraverser, CollisionNode, CardMaker
+from panda3d.core import CollisionTraverser, CollisionNode, CardMaker, loadPrcFileData, WindowProperties
 from panda3d.core import CollisionHandlerQueue, CollisionRay
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
@@ -77,6 +77,10 @@ def CenterPos(Start, End, z):
 class ChessGame(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
+
+        self.props = WindowProperties()
+
+        self.accept('escape', sys.exit)  # Escape quits
         self.videos = {}
 
     def step(self):
@@ -94,6 +98,10 @@ class ChessGame(ShowBase):
                                        text_bg=(1, 0, 0, 1), text_fg = (1, 1, 1, 1), frameColor=(0, 0, 0, 0),
                                        scale=.1, command=self.closeMenu)
         self.menuButton.hide()
+
+        self.props.setSize(1080, 1080)
+        self.props.setTitle("Chess 2")
+        self.win.requestProperties(self.props)
 
         # Step twice to properly load start menu
         self.step()
@@ -129,8 +137,6 @@ class ChessGame(ShowBase):
         #    text="Left-click and drag: Pick up and drag piece",
         #    parent=base.a2dTopLeft, align=TextNode.ALeft,
         #    style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.16), scale=.05)
-
-        self.accept('escape', sys.exit)  # Escape quits
         self.disableMouse()  # Disable mouse camera control
         camera.setPosHpr(0, -12, 8, 0, -35, 0)  # Set the camera
         self.setupLights()  # Setup default lighting
@@ -211,6 +217,11 @@ class ChessGame(ShowBase):
         self.mouseTask = taskMgr.add(self.mouseTask, 'mouseTask')
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
+
+        w, h = 1920, 1080
+        self.props.setSize(w, h)
+        self.props.setFullscreen(True)
+        self.win.requestProperties(self.props)
 
 
     # This function swaps the positions of two pieces
@@ -389,7 +400,7 @@ class Piece(object):
         self.obj.setColor(color)
         self.obj.setPos(SquarePos(square))
         self.PieceColor = ColorName
-        if(ColorName == "B"):
+        if ColorName == "B":
             self.obj.setH(180)
 
     def runAnimation(self, StartPosition, EndPosition):
