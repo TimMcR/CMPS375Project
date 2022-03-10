@@ -18,5 +18,5 @@ def runNoVideos():
     game.setupMenuReady()
     game.run()
 
-#runVideos()
-runNoVideos()
+runVideos()
+#runNoVideos()

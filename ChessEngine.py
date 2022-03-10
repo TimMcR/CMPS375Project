@@ -1,7 +1,7 @@
 # TODO create basic startup menu
 # TODO check if a valid move mas been made
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 # Author: Shao Zhang and Phil Saltzman
 # Models: Eddie Canaan
@@ -28,11 +28,13 @@ from moviepy.editor import *
 import pygame
 
 import sys
-#from direct.showbase.DirectObject import DirectObject
-#from panda3d.core import LightAttrib
 
+
+# from direct.showbase.DirectObject import DirectObject
+# from panda3d.core import LightAttrib
 def convertRGB(red, green, blue):
-    return (red/255, green/255, blue/255, 1)
+    return (red / 255, green / 255, blue / 255, 1)
+
 
 # Colors
 SQUAREBLACK = convertRGB(139, 69, 16)
@@ -41,6 +43,7 @@ HIGHLIGHT1 = convertRGB(0, 255, 255)
 HIGHLIGHT2 = convertRGB(255, 0, 255)
 PIECEBLACK = convertRGB(61, 43, 31)
 PIECEWHITE = convertRGB(253, 245, 230)
+
 
 # Now we define some helper functions that we will need later
 
@@ -53,9 +56,11 @@ PIECEWHITE = convertRGB(253, 245, 230)
 def PointAtZ(z, point, vec):
     return point + vec * ((z - point.getZ()) / vec.getZ())
 
+
 # A handy little function for getting the proper position for a given square1
 def SquarePos(i):
     return LPoint3((i % 8) - 3.5, int(i // 8) - 3.5, 0)
+
 
 # Helper function for determining whether a square should be white or black
 # The modulo operations (%) generate the every-other pattern of a chess-board
@@ -64,6 +69,7 @@ def SquareColor(i):
         return SQUAREBLACK
     else:
         return SQUAREWHITE
+
 
 def CenterPos(Start, End, z):
     startX = Start.getX()
@@ -74,6 +80,7 @@ def CenterPos(Start, End, z):
     newY = (startY + endY) / 2
     return LPoint3(newX, newY, z)
 
+
 class ChessGame(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
@@ -83,29 +90,35 @@ class ChessGame(ShowBase):
         self.accept('escape', sys.exit)  # Escape quits
         self.videos = {}
 
+        self.props.setSize(1080, 1080)
+        self.props.setTitle("Chess 2")
+        self.win.requestProperties(self.props)
+
+        print("Show image")
+
     def step(self):
         self.taskMgr.step()
 
     # Run just to set up menu without start button
     def setupMenuWait(self):
+        print("Setup menu")
+
         self.menuImage = OnscreenImage(image="images/Chess_Menu_Image.png", scale=1)
 
         self.menuText = OnscreenText(text="CHESS 2", pos=(0, .85), scale=0.1,
                                      fg=(1, 0, 0, 1), align=TextNode.ACenter,
                                      mayChange=1)
 
+        self.loadingText = OnscreenText(text="Loading...", pos=(0, -.7))
+
         self.menuButton = DirectButton(text="START", pos=(0, 0, -.7),
-                                       text_bg=(1, 0, 0, 1), text_fg = (1, 1, 1, 1), frameColor=(0, 0, 0, 0),
+                                       text_bg=(1, 0, 0, 1), text_fg=(1, 1, 1, 1), frameColor=(0, 0, 0, 0),
                                        scale=.1, command=self.closeMenu)
         self.menuButton.hide()
 
-        self.props.setSize(1080, 1080)
-        self.props.setTitle("Chess 2")
-        self.win.requestProperties(self.props)
-
         # Step twice to properly load start menu
-        self.step()
-        self.step()
+        for i in range(0, 3):
+            self.step()
 
     def setupMenuReady(self):
         self.setupMenuWait()
@@ -118,6 +131,7 @@ class ChessGame(ShowBase):
         self.setupGame()
 
     def showMenuButton(self):
+        self.loadingText.destroy()
         self.menuButton.show()
 
     def setupGame(self):
@@ -125,15 +139,15 @@ class ChessGame(ShowBase):
         # create a window and set up everything we need for rendering into it.
         self.WhiteTurn = True
         # This code puts the standard title and instruction text on screen
-        #self.title = OnscreenText(
+        # self.title = OnscreenText(
         #    text="Chess 2",
         #    style=1, fg=(1, 1, 1, 1), shadow=(0, 0, 0, 1),
         #    pos=(0.8, -0.95), scale = .07)
-        #self.escapeEvent = OnscreenText(
+        # self.escapeEvent = OnscreenText(
         #    text="ESC: Quit", parent=base.a2dTopLeft,
         #    style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.1),
         #    align=TextNode.ALeft, scale = .05)
-        #self.mouse1Event = OnscreenText(
+        # self.mouse1Event = OnscreenText(
         #    text="Left-click and drag: Pick up and drag piece",
         #    parent=base.a2dTopLeft, align=TextNode.ALeft,
         #    style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.16), scale=.05)
@@ -222,7 +236,6 @@ class ChessGame(ShowBase):
         self.props.setSize(w, h)
         self.props.setFullscreen(True)
         self.win.requestProperties(self.props)
-
 
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):
@@ -387,6 +400,7 @@ class ChessGame(ShowBase):
         print("Captures loaded")
         self.showMenuButton()
 
+
 # Superclass for a piece
 class Piece(object):
     PieceName = ""
@@ -394,7 +408,7 @@ class Piece(object):
     HasAnimation = False
 
     def __init__(self, square, color, ColorName):
-        #self.obj = loader.loadModel(self.model)
+        # self.obj = loader.loadModel(self.model)
         self.obj = Actor(self.model, self.animations)
         self.obj.reparentTo(render)
         self.obj.setColor(color)
@@ -406,18 +420,19 @@ class Piece(object):
     def runAnimation(self, StartPosition, EndPosition):
         print("No move animation made yet")
 
+
 # Example animation
-#startPosition = SquarePos(self.dragging)
-#endPosition = SquarePos(self.hiSq)
+# startPosition = SquarePos(self.dragging)
+# endPosition = SquarePos(self.hiSq)
 
-#jumpHeight = 1
-#moveSpeed = .5
-#middlePosition = CenterPos(startPosition, endPosition, jumpHeight)
+# jumpHeight = 1
+# moveSpeed = .5
+# middlePosition = CenterPos(startPosition, endPosition, jumpHeight)
 
-#movePiece1 = self.pieces[self.dragging].obj.posInterval(moveSpeed, middlePosition, startPos=startPosition)
-#movePiece2 = self.pieces[self.dragging].obj.posInterval(moveSpeed, endPosition, startPos=middlePosition)
+# movePiece1 = self.pieces[self.dragging].obj.posInterval(moveSpeed, middlePosition, startPos=startPosition)
+# movePiece2 = self.pieces[self.dragging].obj.posInterval(moveSpeed, endPosition, startPos=middlePosition)
 
-#moveAnimation = Sequence(movePiece1, movePiece2)
+# moveAnimation = Sequence(movePiece1, movePiece2)
 
 # Classes for each type of chess piece
 class Pawn(Piece):
@@ -439,6 +454,7 @@ class Pawn(Piece):
         movePiece1 = self.obj.posInterval(moveTime, EndPosition, startPos=StartPosition)
         movePiece1.start()
 
+
 class King(Piece):
     model = "models/King"
     animations = {"Drop": "models/King-Drop"}
@@ -452,16 +468,20 @@ class King(Piece):
         Seq = Sequence(pausePiece, Wait(.5), movePiece1)
         Seq.start()
 
+
 class Queen(Piece):
     model = "models/Queen"
-    animations = {"Jump": "models/Queen-Jump"}
+    animations = {"Fly": "models/Queen-Fly"}
     PieceName = "Queen"
 
     def runAnimation(self, StartPosition, EndPosition):
-        #self.obj.play("Jump")
-        moveSpeed = .2
+        self.obj.play("Fly")
+        pausePiece = self.obj.posInterval(.01, StartPosition, startPos=StartPosition)
+        moveSpeed = 1
         movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
-        movePiece1.start()
+        Seq = Sequence(pausePiece, Wait(.5), movePiece1)
+        Seq.start()
+
 
 class Bishop(Piece):
     model = "models/Bishop"
@@ -473,6 +493,7 @@ class Bishop(Piece):
         moveSpeed = 2.5
         movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
         movePiece1.start()
+
 
 class Knight(Piece):
     model = "models/Knight"
@@ -486,6 +507,7 @@ class Knight(Piece):
         movePiece1 = self.obj.posInterval(moveSpeed, EndPosition, startPos=StartPosition)
         Seq = Sequence(pausePiece, Wait(.5), movePiece1)
         Seq.start()
+
 
 class Rook(Piece):
     model = "models/Rook"
