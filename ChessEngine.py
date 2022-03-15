@@ -264,7 +264,6 @@ class ChessGame(ShowBase):
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
 
-        #self.movePieceAuto("a1", "a3")
         #self.fullscreen()
 
     # This function swaps the positions of two pieces
@@ -306,7 +305,7 @@ class ChessGame(ShowBase):
 
         CaptureVideo = KillerColor + KillerName + "K" + KilledName
         if CaptureVideo in self.videos:
-            self.videos[CaptureVideo].preview()
+            self.videos[CaptureVideo].preview(fps=24)
             pygame.quit()
         else:
             print("Video not yet made")
@@ -473,13 +472,11 @@ class ChessGame(ShowBase):
                 if os.path.isfile(BVideoFile):
                     videosIndex = "B" + AllNames[i] + "K" + AllNames[ii]
                     self.videos[videosIndex] = VideoFileClip(BVideoFile)
-                    self.videos[videosIndex].set_fps(24)
                 else:
                     print(BVideoFile + " not found")
                 if os.path.isfile(WVideoFile):
                     videosIndex = "W" + AllNames[i] + "K" + AllNames[ii]
                     self.videos[videosIndex] = VideoFileClip(WVideoFile)
-                    self.videos[videosIndex].set_fps(24)
                 else:
                     print(WVideoFile + " not found")
 
