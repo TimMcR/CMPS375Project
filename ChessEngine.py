@@ -107,10 +107,34 @@ class ChessGame(ShowBase):
         self.props.setTitle("Chess 2")
         self.win.requestProperties(self.props)
 
+    def convertSquare(self, inputString):
+        square = 0
+        letter = inputString[0]
+        num = int(inputString[1])
+        if letter == "a":
+            square += 0
+        elif letter == "b":
+            square += 1
+        elif letter == "c":
+            square += 2
+        elif letter == "d":
+            square += 3
+        elif letter == "e":
+            square += 4
+        elif letter == "f":
+            square += 5
+        elif letter == "g":
+            square += 7
+        elif letter == "h":
+            square += 8
+
+        num = 8 * (num - 1)
+        square += num
+
+        return square
+
     # Run just to set up menu without start button
     def setupMenuWait(self):
-        print("Setup menu")
-
         self.menuImage = OnscreenImage(image="images/Chess_Menu_Image.png", scale=1)
 
         self.menuText = OnscreenText(text="CHESS 2", pos=(0, .85), scale=0.1,
@@ -240,7 +264,7 @@ class ChessGame(ShowBase):
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
 
-
+        #self.movePieceAuto("a1", "a3")
         #self.fullscreen()
 
     # This function swaps the positions of two pieces
@@ -254,6 +278,18 @@ class ChessGame(ShowBase):
         if self.pieces[to]:
             self.pieces[to].square = to
             self.pieces[to].obj.setPos(SquarePos(to))
+
+    def swapPiecesAuto(self, fr, to):
+        fr = self.convertSquare(fr)
+        to = self.convertSquare(to)
+        self.swapPieces(fr, to)
+
+
+
+        startPosition = SquarePos(self.dragging)
+        endPosition = SquarePos(self.hiSq)
+        #DragPiece.runAnimation(startPosition, endPosition)
+
 
     # This function captures a piece
     def capturePieces(self, fr, to):
@@ -369,8 +405,52 @@ class ChessGame(ShowBase):
                         DragPiece.obj.setPos(
                             SquarePos(self.dragging))
 
-        # We are no longer dragging anything
-        self.dragging = False
+            # We are no longer dragging anything
+            self.dragging = False
+
+    # Toggles which color pieces can move
+    def toggleColor(self):
+        self.WhiteTurn = not self.WhiteTurn
+
+    # Moves a piece given the start and end positions without toggling color
+    def movePieceAuto(self, fr, to):
+        fr = self.convertSquare(fr)
+        to = self.convertSquare(to)
+
+        # Check if the piece we are moving is allowed to move
+        CorrectColor = False
+        IsWhite = self.pieces[fr].PieceColor == "W"
+        if self.WhiteTurn and IsWhite:
+            CorrectColor = True
+        elif not self.WhiteTurn and not IsWhite:
+            CorrectColor = True
+
+        # Either we have let go of the piece but we are not on a square,
+        # or we have tried to move a piece when it is not their turn
+        if to is False or CorrectColor is False:
+            # Return piece to previous square
+            self.pieces[fr].obj.setPos(
+                SquarePos(fr))
+
+        else:
+            # Piece has moved to a valid square
+            # Check if we have moved to a square with a piece on it already
+            DragPiece = self.pieces[fr]
+            HitPiece = self.pieces[to]
+            if HitPiece is None:
+                startPosition = SquarePos(fr)
+                endPosition = SquarePos(to)
+                DragPiece.runAnimation(startPosition, endPosition)
+
+                self.swapPieces(fr, to)
+                #self.WhiteTurn = not self.WhiteTurn
+            else:
+                if DragPiece.PieceColor is not HitPiece.PieceColor:
+                    self.capturePieces(fr, to)
+                    self.WhiteTurn = not self.WhiteTurn
+                else:
+                    DragPiece.obj.setPos(
+                        SquarePos(fr))
 
     # This function sets up some default lighting
     def setupLights(self):

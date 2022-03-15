@@ -12,11 +12,28 @@ game = eng.ChessGame()
 def runVideos():
     game.setupMenuWait()
     game.setupVideos()
-    game.run()
+    #game.run()
 
 def runNoVideos():
     game.setupMenuReady()
-    game.run()
+    #game.run()
 
-runVideos()
-#runNoVideos()
+#runVideos()
+runNoVideos()
+
+while True:
+    #if buttonPressed:
+        #take picture
+        #send picture to opencv
+        #determine piece positions
+        #send positions to board library
+        #if move was valid, detect pieces moved and move them
+        #then toggle color
+
+        #game.movePieceAuto("a1", "a3")
+        #game.toggleColor()
+
+    game.step()
+
+# Example to move a piece:
+# game.movePieceAuto("a1", "a3")
