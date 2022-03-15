@@ -90,14 +90,22 @@ class ChessGame(ShowBase):
         self.accept('escape', sys.exit)  # Escape quits
         self.videos = {}
 
-        self.props.setSize(1080, 1080)
-        self.props.setTitle("Chess 2")
-        self.win.requestProperties(self.props)
+        #self.imageScreen()
 
-        print("Show image")
 
     def step(self):
         self.taskMgr.step()
+
+    def fullscreen(self):
+        w, h = 1920, 1080
+        self.props.setSize(w, h)
+        #self.props.setFullscreen(True)
+        self.win.requestProperties(self.props)
+
+    def imageScreen(self):
+        self.props.setSize(1080, 1080)
+        self.props.setTitle("Chess 2")
+        self.win.requestProperties(self.props)
 
     # Run just to set up menu without start button
     def setupMenuWait(self):
@@ -232,10 +240,8 @@ class ChessGame(ShowBase):
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
 
-        w, h = 1920, 1080
-        self.props.setSize(w, h)
-        self.props.setFullscreen(True)
-        self.win.requestProperties(self.props)
+
+        #self.fullscreen()
 
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):
