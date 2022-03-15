@@ -1,50 +1,31 @@
 import chess
 board = chess.Board()
-# 0 is empty, 1 is black, 2 is white
-#            [[1, 1, 1, 1, 1, 1, 1, 1 ],
-#             [1, 1, 1, 1, 1, 1, 1, 1 ],
-#             [0, 0, 0, 0, 0, 0, 0, 0 ],
-#             [0, 0, 0, 0, 0, 0, 0, 0 ],
-#             [0, 0, 0, 0, 0, 0, 0, 0 ],
-#             [0, 0, 0, 0, 0, 0, 0, 0 ],
-#             [2, 2, 2, 2, 2, 2, 2, 2 ],
-#             [2, 2, 2, 2, 2, 2, 2, 2 ]]
 
+#board.fen() is the state of the board used by the chess library, you will probably not need this
 
-#current = [[1, 1, 1, 1, 1, 1, 1, 1 ],
-#           [1, 1, 1, 1, 1, 1, 1, 1 ],
-#           [0, 0, 0, 0, 0, 0, 0, 0 ],
-#           [0, 0, 0, 0, 0, 0, 0, 0 ],
-#           [0, 0, 0, 0, 0, 0, 0, 0 ],
-#           [0, 0, 0, 0, 0, 0, 0, 0 ],
-#           [2, 2, 2, 2, 2, 2, 2, 2 ],
-#           [2, 2, 2, 2, 2, 2, 2, 2 ]]
+#blackcastled and whitecastled:
+#0 means the king has not moved and has the ability to castle
+#1 means the king has moved regardless of castling or not, losing the ability to castle in the future
 
-#nextMove = [[1, 1, 1, 1, 1, 1, 1, 1 ],
-#           [1, 1, 1, 1, 1, 1, 1, 1 ],
-#           [0, 0, 0, 0, 0, 0, 0, 0 ],
-#           [0, 0, 0, 0, 0, 0, 0, 0 ],
-#           [0, 0, 0, 0, 0, 2, 0, 0 ],
-#           [0, 0, 0, 0, 0, 0, 0, 0 ],
-#           [2, 2, 2, 2, 2, 0, 2, 2 ],
-#           [2, 2, 2, 2, 2, 2, 2, 2 ]]
+#blackorwhite: determines whose turn it is. 0 for white and 1 for black
 
+#invalidMove: 0 if the move is valid, 1 if it is not
 
+#captured: the captured piece if there is one
+#this will be in the form of a single letter representing the piece. uppercase for white and lowercase for black
 
-#boardpattern = "rnbqkbnr/pppppppp/5P2/8/8/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1 "
+#capturee: the piece that captures if there is one
+#same rules as captured
 
-#blackcastled = 0
-#whitecastled = 0
-#blackorwhite = 0 #0 for white, 1 for black
+#checks: an array containing strings of the piece letter and board square combined
+#letter portion follows the same rules as captured
 
+#str: this is the move that is done formatted as squareonesquaretwo
+#changed this so it always displays "no detectable move" if it's invalid
 
-
-
-
-
-
-#print(board, "\n")
-#print(board.fen(), "\n")
+#outcome: this will display "none" if the game hasn't ended yet
+#if the game has ended then it will be displayed in this format:
+#Outcome(termination=<Termination.[reason for game ending]: 1>, winner(whoever's turn it currently is)=[True or False])
 
 def initBoard():
     return [[1, 1, 1, 1, 1, 1, 1, 1 ],
@@ -149,6 +130,7 @@ def checkMove(current, nextMove, boardpattern, blackcastled, whitecastled, black
           try:
               board.push_uci(str)
           except:
+              str = "no detectable move"
               print("invalid move")
               blackorwhite = play
               invalidMove = 1
@@ -177,12 +159,14 @@ def checkMove(current, nextMove, boardpattern, blackcastled, whitecastled, black
              try:
                  board.push_uci(str)
              except:
+                 str = "no detectable move"
                  print("invalid move")
                  blackorwhite = play
                  invalidMove = 1
                  captured = "none"
                  capturee = "none"
          else:
+            str = "no detectable move"
             print("invalid move")
             invalidMove = 1
             captured = "none"
@@ -195,6 +179,7 @@ def checkMove(current, nextMove, boardpattern, blackcastled, whitecastled, black
                   str = castleright
                   board.push_uci(castleright)
               except:
+                  str = "no detectable move"
                   print("invalid move")
                   blackorwhite = play
                   invalidMove = 1
@@ -205,6 +190,7 @@ def checkMove(current, nextMove, boardpattern, blackcastled, whitecastled, black
                   str = castleleft
                   board.push_uci(castleleft)
               except:
+                  str = "no detectable move"
                   print("invalid move")
                   blackorwhite = play
                   invalidMove = 1
@@ -237,3 +223,5 @@ def checkMove(current, nextMove, boardpattern, blackcastled, whitecastled, black
     if bool(board.is_game_over()) == True:
         outcome = board.outcome()
     return board.fen(), blackcastled, whitecastled, blackorwhite, invalidMove, captured, capturee, checks, str, outcome
+
+

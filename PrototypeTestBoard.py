@@ -115,7 +115,7 @@ class MyTestCase(unittest.TestCase):
            [2, 2, 2, 2, 2, 2, 2, 2 ]],
 
            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ", 0, 0, 0),
-           ('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 0, 0, 0, 1, 'none', 'none', [], 'f2f5', 'None'))
+           ('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 0, 0, 0, 1, 'none', 'none', [], 'no detectable move', 'None'))
 
         self.assertEqual(c.initBoard(), (
            [[1, 1, 1, 1, 1, 1, 1, 1 ],
