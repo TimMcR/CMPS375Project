@@ -27,7 +27,29 @@ class MyTestCase(unittest.TestCase):
            [2, 2, 2, 2, 2, 2, 2, 2 ]],
 
            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ", 0, 0, 0),
-           ('rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1', 0, 0, 1, 0))
+           ('rnbqkbnr/pppppppp/8/8/5P2/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1', 0, 0, 1, 0, 'none', 'none', [], 'f2f4', 'None'))
+
+        self.assertEqual(c.checkMove(
+           [[1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 2, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 2, 2, 2, 2, 0, 2, 2],
+            [2, 2, 2, 2, 2, 2, 2, 2]],
+
+           [[1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 0, 1, 1, 1],
+            [0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 2, 2, 2, 2, 0, 2, 2],
+            [2, 2, 2, 2, 2, 2, 2, 2]],
+
+           "rnbqkbnr/pppppppp/5P2/8/8/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1 ", 0, 1, 1),
+           ('rnbqkbnr/pppp1ppp/5p2/8/8/8/PPPPP1PP/RNBQKBNR w KQkq - 0 2', 0, 1, 0, 0, 'P', 'p', [], 'e7f6', 'None'))
 
         self.assertEqual(c.checkMove(
            [[1, 1, 1, 1, 1, 1, 1, 1 ],
@@ -49,7 +71,29 @@ class MyTestCase(unittest.TestCase):
            [2, 2, 2, 2, 0, 2, 2, 0 ]],
 
            "rnbqkbnr/pppppppp/8/8/8/5BN1/PPPPPPPP/RNBQK2R w KQkq - 0 1 ", 0, 0, 0),
-           ('rnbqkbnr/pppppppp/8/8/8/5BN1/PPPPPPPP/RNBQ1RK1 b kq - 1 1', 1, 0, 1, 0))
+           ('rnbqkbnr/pppppppp/8/8/8/5BN1/PPPPPPPP/RNBQ1RK1 b kq - 1 1', 0, 1, 1, 0, 'none', 'none', [], 'e1g1', 'None'))
+
+        self.assertEqual(c.checkMove(
+           [[1, 1, 1, 1, 1, 1, 1, 1 ],
+           [1, 1, 1, 1, 0, 1, 1, 1 ],
+           [0, 0, 0, 0, 0, 0, 0, 0 ],
+           [0, 0, 0, 0, 1, 0, 0, 0 ],
+           [0, 0, 0, 0, 0, 2, 0, 0 ],
+           [0, 0, 0, 0, 0, 0, 0, 0 ],
+           [2, 2, 2, 2, 2, 0, 2, 2 ],
+           [2, 2, 2, 2, 2, 2, 2, 2 ]],
+
+           [[1, 1, 1, 1, 1, 1, 1, 1 ],
+           [1, 1, 1, 1, 0, 1, 1, 1 ],
+           [0, 0, 0, 0, 0, 0, 0, 0 ],
+           [0, 0, 0, 0, 2, 0, 0, 0 ],
+           [0, 0, 0, 0, 0, 0, 0, 0 ],
+           [0, 0, 0, 0, 0, 0, 0, 0 ],
+           [2, 2, 2, 2, 2, 0, 2, 2 ],
+           [2, 2, 2, 2, 2, 2, 2, 2 ]],
+
+           "rnbqkbnr/pppp1ppp/8/4p3/5P2/8/PPPPP1PP/RNBQKBNR w KQkq - 0 1 ", 0, 0, 0),
+           ('rnbqkbnr/pppp1ppp/8/4P3/8/8/PPPPP1PP/RNBQKBNR b KQkq - 0 1', 0, 0, 1, 0, 'p', 'P', [], 'f4e5', 'None'))
 
         self.assertEqual(c.checkMove(
            [[1, 1, 1, 1, 1, 1, 1, 1 ],
@@ -71,7 +115,7 @@ class MyTestCase(unittest.TestCase):
            [2, 2, 2, 2, 2, 2, 2, 2 ]],
 
            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 ", 0, 0, 0),
-           ('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 0, 0, 0, 1))
+           ('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 0, 0, 0, 1, 'none', 'none', [], 'f2f5', 'None'))
 
         self.assertEqual(c.initBoard(), (
            [[1, 1, 1, 1, 1, 1, 1, 1 ],
