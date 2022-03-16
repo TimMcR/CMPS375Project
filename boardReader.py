@@ -4,7 +4,7 @@
 # If you need anything related to this file, talk to Carter.
 
 # Given an image (Working filename/path is just "boardImage.jpg"), processing occurs in steps:
-# Step 1: Convert image to greyscale
+# Step 1: Convert image to greyscale, then blur
 # Step 2: Detect outline of the chess board
 # Step 3: Crop along that outline
 # Step 4: Sequentially detect the first threshold, going low x to high x before low y to high y
@@ -18,26 +18,31 @@
 
 
 import sys
+import numpy
 import cv2 as cv
 from cv2 import THRESH_BINARY
 
-# Image to be converted. Change to whatever the porper file path ends up being.
-img = cv.imread("boardImage.jpg")
+# Image input
+img = cv.imread("devImages/inkedCroppedBoard.jpg")
+oimg = img
 cv.imwrite("imageOut/input.jpg", img)
 
-# Step 1
-# UNUSED: Second parameter of GaussianBlur changes how blurry it is. Odd numbers only.
+# Colorspace + Blurring
 img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+img = cv.GaussianBlur(img, (39,39), 6, 6)
 cv.imwrite("imageOut/grayscale.jpg", img)
-#img = cv.GaussianBlur(img, (3,3), 0)
 
-#Step 2:
-img = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 101, 2)
+# Thresholding
+img = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 11, 2)
 cv.imwrite("imageOut/threshBinary.jpg", img)
-contours, hierarchy = cv.findContours(image = img, mode = cv.RETR_TREE, method = cv.CHAIN_APPROX_SIMPLE)
-cv.drawContours(image = img, contours = contours, contourIdx = -1, color = (0, 255, 0), thickness = 2, lineType = cv.LINE_AA)
-cv.imwrite("imageOut/countours.jpg", img)
 
+# Contours
+contours, hierarchy = cv.findContours(image = img, mode = cv.RETR_TREE, method = cv.CHAIN_APPROX_SIMPLE)
+cv.drawContours(image = oimg, contours = contours, contourIdx = -1, color = (0, 0, 255), thickness = 2, lineType = cv.LINE_AA)
+cv.imwrite("imageOut/countours.jpg", oimg)
+i = 0
+while i < len(contours):
+    print(str(contours[i]))
 #Image display, for development purposes
-cv.imshow("Image", img)
-cv.waitKey(0)
+#cv.imshow("Image", img)
+#cv.waitKey(0)
