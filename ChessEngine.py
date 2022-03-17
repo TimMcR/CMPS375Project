@@ -13,7 +13,8 @@
 # movePieceAuto(fr, to): moves a piece in the fr square to the to square, takes care of kill animations
 
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import CollisionTraverser, CollisionNode, CardMaker, loadPrcFileData, WindowProperties
+from panda3d.core import CollisionTraverser, CollisionNode, CardMaker, loadPrcFileData, WindowProperties, TextureStage, \
+    TexGenAttrib
 from panda3d.core import CollisionHandlerQueue, CollisionRay
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
@@ -171,7 +172,7 @@ class ChessGame(ShowBase):
         #    parent=base.a2dTopLeft, align=TextNode.ALeft,
         #    style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.16), scale=.05)
         self.disableMouse()  # Disable mouse camera control
-        camera.setPosHpr(0, -12, 8, 0, -35, 0)  # Set the camera
+        camera.setPosHpr(0, -14, 10, 0, -35, 0)  # Set the camera
         self.setupLights()  # Setup default lighting
 
         # Since we are using collision detection to do picking, we set it up like
@@ -203,6 +204,13 @@ class ChessGame(ShowBase):
         # For each square
         self.squares = [None for i in range(64)]
         self.pieces = [None for i in range(64)]
+
+        self.table = loader.loadModel("models/Table")
+        self.table.setTexGen(TextureStage.getDefault(), TexGenAttrib.MWorldPosition)
+        self.table.setTexProjector(TextureStage.getDefault(), render, self.table)
+        self.table.reparentTo(self.squareRoot)
+        #self.table.setPos(0, 0, -.1)
+
         for i in range(64):
             # Load, parent, color, and position the model (a single square
             # polygon)
@@ -226,7 +234,10 @@ class ChessGame(ShowBase):
         # The order of pieces on a chessboard from white's perspective. This list
         # contains the constructor functions for the piece classes defined
         # below
+
         pieceOrder = (Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook)
+
+        # Initializes pieces hidden
 
         for i in range(8, 16):
             # Load the white pawns
@@ -252,6 +263,13 @@ class ChessGame(ShowBase):
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
 
         #self.fullscreen()
+
+    def setAlarmLightOn(self):
+        self.alarmLight.setColor((.7, 0, .1, 1))
+
+    def setAlarmLightOff(self):
+        self.alarmLight.setColor((0, 0, 0, 1))
+
 
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):
@@ -430,10 +448,18 @@ class ChessGame(ShowBase):
     def setupLights(self):
         ambientLight = AmbientLight("ambientLight")
         ambientLight.setColor((.8, .8, .8, 1))
-        directionalLight = DirectionalLight("directionalLight")
-        directionalLight.setDirection(LVector3(0, 45, -45))
-        directionalLight.setColor((0.2, 0.2, 0.2, 1))
-        render.setLight(render.attachNewNode(directionalLight))
+        self.directionalLight = DirectionalLight("directionalLight")
+        self.directionalLight.setDirection(LVector3(0, 45, -45))
+
+        self.directionalLight.setColor((.4, .4, .4, 1))
+
+        self.alarmLight = DirectionalLight("alarmLight")
+        self.alarmLight.setDirection(LVector3(0, -45, -45))
+
+        self.alarmLight.setColor((0, 0, 0, 1))
+
+        render.setLight(render.attachNewNode(self.directionalLight))
+        render.setLight(render.attachNewNode(self.alarmLight))
         render.setLight(render.attachNewNode(ambientLight))
 
     def setupVideos(self):

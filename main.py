@@ -37,10 +37,10 @@ def runGameWithCamera():
     while True:
         # If the button is pressed
         lastButtonState = currentButtonState
-        if GPIO.input(10) == GPIO.HIGH:
-            currentButtonState = True
-        else:
-            currentButtonState = False
+        #if GPIO.input(10) == GPIO.HIGH:
+        #    currentButtonState = True
+        #else:
+        #    currentButtonState = False
 
         toggle = lastButtonState and not currentButtonState
 
@@ -77,4 +77,4 @@ def runGameWithMouse():
 
 # Main game code
 setupVideos()
-runGameWithMouse()
+runGameWithCamera()
