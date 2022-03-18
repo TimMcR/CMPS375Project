@@ -1,19 +1,20 @@
 # TODO create basic startup menu
 # TODO check if a valid move mas been made
 
-# !/usr/bin/env python
+# Original Tutorial Author: Shao Zhang and Phil Saltzman
+# Chess Piece Models By Kanjiklub:
+# https://www.cgtrader.com/free-3d-models/furniture/other/chess-pieces-b30f2f5b-5d9f-44e0-b6a4-24439b09a867
 
-# Author: Shao Zhang and Phil Saltzman
-# Models: Eddie Canaan
-# Last Updated: 2015-03-13
-#
-# This tutorial shows how to determine what objects the mouse is pointing to
-# We do this using a collision ray that extends from the mouse position
-# and points straight into the scene, and see what it collides with. We pick
-# the object with the closest collision
+# ChessEngine.py Author: Ramsey McReynolds
+# The purpose of this class is to provide an easy-to-use class to run the chess game from other classes
+# Useful public methods
+# step(): steps through the game one time
+# toggleColor(): toggles the current color that is able to move
+# movePieceAuto(fr, to): moves a piece in the fr square to the to square, takes care of kill animations
 
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import CollisionTraverser, CollisionNode, CardMaker, loadPrcFileData, WindowProperties
+from panda3d.core import CollisionTraverser, CollisionNode, CardMaker, loadPrcFileData, WindowProperties, TextureStage, \
+    TexGenAttrib
 from panda3d.core import CollisionHandlerQueue, CollisionRay
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import TextNode
@@ -26,24 +27,7 @@ from direct.interval.IntervalGlobal import *
 
 from moviepy.editor import *
 import pygame
-
 import sys
-
-
-# from direct.showbase.DirectObject import DirectObject
-# from panda3d.core import LightAttrib
-def convertRGB(red, green, blue):
-    return (red / 255, green / 255, blue / 255, 1)
-
-
-# Colors
-SQUAREBLACK = convertRGB(139, 69, 16)
-SQUAREWHITE = convertRGB(255, 248, 220)
-HIGHLIGHT1 = convertRGB(0, 255, 255)
-HIGHLIGHT2 = convertRGB(255, 0, 255)
-PIECEBLACK = convertRGB(61, 43, 31)
-PIECEWHITE = convertRGB(253, 245, 230)
-
 
 # Now we define some helper functions that we will need later
 
@@ -51,16 +35,14 @@ PIECEWHITE = convertRGB(253, 245, 230)
 # will give us the point on the line where the desired z value is what we want.
 # This is how we know where to position an object in 3D space based on a 2D mouse
 # position. It also assumes that we are dragging in the XY plane.
-#
+
 # This is derived from the mathematical of a plane, solved for a given point
 def PointAtZ(z, point, vec):
     return point + vec * ((z - point.getZ()) / vec.getZ())
 
-
 # A handy little function for getting the proper position for a given square1
 def SquarePos(i):
     return LPoint3((i % 8) - 3.5, int(i // 8) - 3.5, 0)
-
 
 # Helper function for determining whether a square should be white or black
 # The modulo operations (%) generate the every-other pattern of a chess-board
@@ -69,7 +51,6 @@ def SquareColor(i):
         return SQUAREBLACK
     else:
         return SQUAREWHITE
-
 
 def CenterPos(Start, End, z):
     startX = Start.getX()
@@ -80,6 +61,40 @@ def CenterPos(Start, End, z):
     newY = (startY + endY) / 2
     return LPoint3(newX, newY, z)
 
+def convertRGB(red, green, blue):
+    return (red / 255, green / 255, blue / 255, 1)
+
+def convertSquare(inputString):
+    square = 0
+    letter = inputString[0]
+    num = int(inputString[1])
+    if letter == "a":
+        square += 0
+    elif letter == "b":
+        square += 1
+    elif letter == "c":
+        square += 2
+    elif letter == "d":
+        square += 3
+    elif letter == "e":
+        square += 4
+    elif letter == "f":
+        square += 5
+    elif letter == "g":
+        square += 7
+    elif letter == "h":
+        square += 8
+
+    square += (8 * (num - 1))
+    return square
+
+# Colors
+SQUAREBLACK = convertRGB(139, 69, 16)
+SQUAREWHITE = convertRGB(255, 248, 220)
+HIGHLIGHT1 = convertRGB(0, 255, 255)
+HIGHLIGHT2 = convertRGB(255, 0, 255)
+PIECEBLACK = convertRGB(61, 43, 31)
+PIECEWHITE = convertRGB(253, 245, 230)
 
 class ChessGame(ShowBase):
     def __init__(self):
@@ -91,7 +106,6 @@ class ChessGame(ShowBase):
         self.videos = {}
 
         #self.imageScreen()
-
 
     def step(self):
         self.taskMgr.step()
@@ -106,32 +120,6 @@ class ChessGame(ShowBase):
         self.props.setSize(1080, 1080)
         self.props.setTitle("Chess 2")
         self.win.requestProperties(self.props)
-
-    def convertSquare(self, inputString):
-        square = 0
-        letter = inputString[0]
-        num = int(inputString[1])
-        if letter == "a":
-            square += 0
-        elif letter == "b":
-            square += 1
-        elif letter == "c":
-            square += 2
-        elif letter == "d":
-            square += 3
-        elif letter == "e":
-            square += 4
-        elif letter == "f":
-            square += 5
-        elif letter == "g":
-            square += 7
-        elif letter == "h":
-            square += 8
-
-        num = 8 * (num - 1)
-        square += num
-
-        return square
 
     # Run just to set up menu without start button
     def setupMenuWait(self):
@@ -184,7 +172,7 @@ class ChessGame(ShowBase):
         #    parent=base.a2dTopLeft, align=TextNode.ALeft,
         #    style=1, fg=(1, 1, 1, 1), pos=(0.06, -0.16), scale=.05)
         self.disableMouse()  # Disable mouse camera control
-        camera.setPosHpr(0, -12, 8, 0, -35, 0)  # Set the camera
+        camera.setPosHpr(0, -14, 10, 0, -35, 0)  # Set the camera
         self.setupLights()  # Setup default lighting
 
         # Since we are using collision detection to do picking, we set it up like
@@ -216,6 +204,13 @@ class ChessGame(ShowBase):
         # For each square
         self.squares = [None for i in range(64)]
         self.pieces = [None for i in range(64)]
+
+        self.table = loader.loadModel("models/Table")
+        self.table.setTexGen(TextureStage.getDefault(), TexGenAttrib.MWorldPosition)
+        self.table.setTexProjector(TextureStage.getDefault(), render, self.table)
+        self.table.reparentTo(self.squareRoot)
+        #self.table.setPos(0, 0, -.1)
+
         for i in range(64):
             # Load, parent, color, and position the model (a single square
             # polygon)
@@ -239,7 +234,10 @@ class ChessGame(ShowBase):
         # The order of pieces on a chessboard from white's perspective. This list
         # contains the constructor functions for the piece classes defined
         # below
+
         pieceOrder = (Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook)
+
+        # Initializes pieces hidden
 
         for i in range(8, 16):
             # Load the white pawns
@@ -266,6 +264,13 @@ class ChessGame(ShowBase):
 
         #self.fullscreen()
 
+    def setAlarmLightOn(self):
+        self.alarmLight.setColor((.7, 0, .1, 1))
+
+    def setAlarmLightOff(self):
+        self.alarmLight.setColor((0, 0, 0, 1))
+
+
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):
         temp = self.pieces[fr]
@@ -277,18 +282,6 @@ class ChessGame(ShowBase):
         if self.pieces[to]:
             self.pieces[to].square = to
             self.pieces[to].obj.setPos(SquarePos(to))
-
-    def swapPiecesAuto(self, fr, to):
-        fr = self.convertSquare(fr)
-        to = self.convertSquare(to)
-        self.swapPieces(fr, to)
-
-
-
-        startPosition = SquarePos(self.dragging)
-        endPosition = SquarePos(self.hiSq)
-        #DragPiece.runAnimation(startPosition, endPosition)
-
 
     # This function captures a piece
     def capturePieces(self, fr, to):
@@ -413,8 +406,8 @@ class ChessGame(ShowBase):
 
     # Moves a piece given the start and end positions without toggling color
     def movePieceAuto(self, fr, to):
-        fr = self.convertSquare(fr)
-        to = self.convertSquare(to)
+        fr = convertSquare(fr)
+        to = convertSquare(to)
 
         # Check if the piece we are moving is allowed to move
         CorrectColor = False
@@ -455,10 +448,18 @@ class ChessGame(ShowBase):
     def setupLights(self):
         ambientLight = AmbientLight("ambientLight")
         ambientLight.setColor((.8, .8, .8, 1))
-        directionalLight = DirectionalLight("directionalLight")
-        directionalLight.setDirection(LVector3(0, 45, -45))
-        directionalLight.setColor((0.2, 0.2, 0.2, 1))
-        render.setLight(render.attachNewNode(directionalLight))
+        self.directionalLight = DirectionalLight("directionalLight")
+        self.directionalLight.setDirection(LVector3(0, 45, -45))
+
+        self.directionalLight.setColor((.4, .4, .4, 1))
+
+        self.alarmLight = DirectionalLight("alarmLight")
+        self.alarmLight.setDirection(LVector3(0, -45, -45))
+
+        self.alarmLight.setColor((0, 0, 0, 1))
+
+        render.setLight(render.attachNewNode(self.directionalLight))
+        render.setLight(render.attachNewNode(self.alarmLight))
         render.setLight(render.attachNewNode(ambientLight))
 
     def setupVideos(self):
@@ -474,11 +475,13 @@ class ChessGame(ShowBase):
                     self.videos[videosIndex] = VideoFileClip(BVideoFile)
                 else:
                     print(BVideoFile + " not found")
+                self.step()
                 if os.path.isfile(WVideoFile):
                     videosIndex = "W" + AllNames[i] + "K" + AllNames[ii]
                     self.videos[videosIndex] = VideoFileClip(WVideoFile)
                 else:
                     print(WVideoFile + " not found")
+                self.step()
 
         print("Captures loaded")
         self.showMenuButton()
