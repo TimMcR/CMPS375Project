@@ -15,7 +15,7 @@ import numpy as np
 import cv2 as cv
 from imutils import contours
 
-<<<<<<< HEAD
+#<<<<<<< HEAD
 # Image input
 img = cv.imread("devImages/inkedCroppedBoardSmall.jpg")
 oimg = img
@@ -83,11 +83,11 @@ cv.waitKey()
 #Image display, for development purposes
 #cv.imshow("Image", img)
 #cv.waitKey(0)
-=======
+#=======
 # From Ramsey: I just encapsulated everything into the read method for simplicity
-def read():
+def read(imagePath):
     # Image input
-    img = cv.imread("devImages/inkedCroppedBoard.jpg")
+    img = cv.imread(imagePath)
     oimg = img
     cv.imwrite("imageOut/input.jpg", img)
 
@@ -112,5 +112,5 @@ def read():
     #cv.waitKey(0)
 
 # Un-comment to run
-#read()
->>>>>>> 8daca53742d8e81d7b040fea98e0324cf8069057
+#read("devImages/inkedCroppedBoard.jpg")
+#>>>>>>> 8daca53742d8e81d7b040fea98e0324cf8069057

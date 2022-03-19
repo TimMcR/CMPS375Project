@@ -8,7 +8,7 @@ from PIL import Image
 
 import ChessEngine as eng
 import theboard as brd
-import boardReader as cv
+#import boardReader as cv
 
 # Create new instance of the chess game
 game = eng.ChessGame()
@@ -76,5 +76,5 @@ def runGameWithMouse():
     game.run()
 
 # Main game code
-setupVideos()
+setupNoVideos()
 runGameWithCamera()
