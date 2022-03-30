@@ -1,2 +1,2 @@
 ## Click to watch video
-[![VIDEO LINK](http://img.youtube.com/vi/jiD5CuX69HE/0.jpg)](https://www.youtube.com/watch?v=jiD5CuX69HE)
+[![VIDEO LINK](http://img.youtube.com/vi/os8Wp1nwBjk/0.jpg)](https://www.youtube.com/watch?v=os8Wp1nwBjk)
