@@ -76,5 +76,5 @@ def runGameWithMouse():
     game.run()
 
 # Main game code
-setupNoVideos()
+setupVideos()
 runGameWithCamera()

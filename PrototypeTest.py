@@ -1,21 +1,32 @@
-import unittest
-#Rename to actual library names
-import ChessTracker
-import BoardVision
+import boardReader as cv
+import theboard
 
-#TODO add custom libraries to project and write enough code to pass unit tests
+# Image output from camera
+imgPath = '...'
 
-class MyTestCase(unittest.TestCase):
-    def test_ChessTracker(self):
-        c = ChessTracker()
-        #Create a new chess board for future validation
-        c.initBoard()
+# Board Reader library determines current position of chess pieces
+cv.read(imgPath)
+newPositions = cv.getPositions()
 
-    def test_boardVision(self):
-        v = BoardVision()
-        #Take a picture of the board with no pieces on it
-        v.initClearBoard()
+# Board library determines if a valid move has been made and other chess logic
+board = theboard.Board()
+board.checkMove(newPositions)
+if board.isValidMove:
+    print('Valid move')
+    currentColor = board.blackorwhite
+    # Check for preliminary conditions
+    if board.isCheck:
+        print('King is in danger')
+
+    if board.isCheckMate:
+        print('King has been captured')
+    else:
+        # Move pieces
+        if currentColor == 0 and board.whitecastled:
+            print('White has castled')
+        if currentColor == 1 and board.blackcastled:
+            print('Black has castled')
 
 
-if __name__ == '__main__':
-    unittest.main()
+else:
+    print('Invalid move')
