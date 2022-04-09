@@ -15,6 +15,7 @@ import numpy as np
 import cv2 as cv
 from imutils import contours
 
+#<<<<<<< HEAD
 # Image input
 img = cv.imread("devImages/inkedCroppedBoardSmall.jpg")
 oimg = img
@@ -82,3 +83,34 @@ cv.waitKey()
 #Image display, for development purposes
 #cv.imshow("Image", img)
 #cv.waitKey(0)
+#=======
+# From Ramsey: I just encapsulated everything into the read method for simplicity
+def read(imagePath):
+    # Image input
+    img = cv.imread(imagePath)
+    oimg = img
+    cv.imwrite("imageOut/input.jpg", img)
+
+    # Colorspace + Blurring
+    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    img = cv.GaussianBlur(img, (39,39), 6, 6)
+    cv.imwrite("imageOut/grayscale.jpg", img)
+
+    # Thresholding
+    img = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 11, 2)
+    cv.imwrite("imageOut/threshBinary.jpg", img)
+
+    # Contours
+    contours, hierarchy = cv.findContours(image = img, mode = cv.RETR_TREE, method = cv.CHAIN_APPROX_SIMPLE)
+    cv.drawContours(image = oimg, contours = contours, contourIdx = -1, color = (0, 0, 255), thickness = 2, lineType = cv.LINE_AA)
+    cv.imwrite("imageOut/countours.jpg", oimg)
+    i = 0
+    while i < len(contours):
+        print(str(contours[i]))
+    #Image display, for development purposes
+    #cv.imshow("Image", img)
+    #cv.waitKey(0)
+
+# Un-comment to run
+#read("devImages/inkedCroppedBoard.jpg")
+#>>>>>>> 8daca53742d8e81d7b040fea98e0324cf8069057

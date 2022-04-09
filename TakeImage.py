@@ -1,21 +1,23 @@
 import subprocess
 from PIL import Image
 import RPi.GPIO as GPIO
-
+import boardReader as reader
 
 
 def TakePicture():
     
     # Taking picture
-    subprocess.call('fswebcam -r 1280x1280 /home/pi/Desktop/NewImage.jpg', shell=True)
+    subprocess.call('fswebcam -r 1280x1280 devImages/NewImage.jpg', shell=True)
 
 
     # Showing the image
-    imgPath = '/home/pi/Desktop/NewImage.jpg'  # Specifying path    
+    imgPath = 'devImages/NewImage.jpg'  # Specifying path
 
     img = Image.open(imgPath)  # Opening image
 
     img.show()  # Displaying image
+
+    reader.read('devImages/NewImage.jpg')
     
 
 # Button input

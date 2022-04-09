@@ -27,6 +27,8 @@ board = chess.Board()
 #if the game has ended then it will be displayed in this format:
 #Outcome(termination=<Termination.[reason for game ending]: 1>, winner(whoever's turn it currently is)=[True or False])
 
+#moveexport: gives the array that will be put into the next run of the function for current
+
 # From Ramsey: I just put everything into an object and made the outputs into instance variables
 
 class Board():
@@ -233,6 +235,11 @@ class Board():
         if bool(board.is_game_over()) == True:
             outcome = board.outcome()
 
+        if invalidMove == 1:
+            moveexport = current
+        else:
+            moveexport = nextMove
+
         self.blackcastled = blackcastled
         self.whitecastled = whitecastled
         self.blackorwhite = blackorwhite
@@ -243,7 +250,8 @@ class Board():
         self.checks = checks
         self.str = str
         self.outcome = outcome
+        self.moveexport = moveexport
 
-        return board.fen(), blackcastled, whitecastled, blackorwhite, invalidMove, captured, capturee, checks, str, outcome
+        return board.fen(), blackcastled, whitecastled, blackorwhite, invalidMove, captured, capturee, checks, str, outcome, moveexport
 
 

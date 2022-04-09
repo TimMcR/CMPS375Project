@@ -1,5 +1,6 @@
-# TODO create basic startup menu
 # TODO check if a valid move mas been made
+# TODO write checkmateMoveAuto code
+# TODO write castle move swap code
 
 # Original Tutorial Author: Shao Zhang and Phil Saltzman
 # Chess Piece Models By Kanjiklub:
