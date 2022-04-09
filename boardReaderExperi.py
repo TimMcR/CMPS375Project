@@ -15,7 +15,7 @@ from imutils import contours
 import numpy as np
 
 # Load image, grayscale, and adaptive threshold
-image = cv2.imread('devImages\inkedCroppedBoardSmall.jpg')
+image = cv2.imread('devImages\inkedCroppedBoardSmallSample.jpg')
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 thresh = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,2)
 
@@ -69,16 +69,16 @@ for row in chess_rows:
         #cv2.imshow('result', result)
         #cv2.waitKey(175)
 temps = ["templates\pawn.jpg", "templates\king.jpg", "templates\knight.jpg", "templates\qbishop.jpg", "templates\qrook.jpg", "templates\queen.jpg"]
-oList = [[]*8]*8
+oList = [[0]*8]*8
 for x in range(len(oList)):
     for y in range(len(oList[x])):
         for t in range(len(temps)):
             temp = cv2.imread(temps[t])
-            if (cv2.matchTemplate(sqList[x][y], temp, cv2.TM_CCOEFF_NORMED) > 0.8):
+            res = cv2.matchTemplate(sqList[x][y], temp, cv2.TM_CCOEFF_NORMED)
+            if (np.amax(res) >= 0.8):
                 oList[x][y] = 1
-            else:
-                oList[x][y] = 0
 
 cv2.imshow('thresh', thresh)
 cv2.imshow('invert', invert)
 cv2.waitKey()
+print(str(oList))
