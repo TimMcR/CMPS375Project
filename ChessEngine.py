@@ -1,6 +1,4 @@
 # TODO check if a valid move mas been made
-# TODO write checkmateMoveAuto code
-# TODO write castle move swap code
 
 # Original Tutorial Author: Shao Zhang and Phil Saltzman
 # Chess Piece Models By Kanjiklub:
@@ -265,18 +263,6 @@ class ChessGame(ShowBase):
 
         #self.fullscreen()
 
-
-        self.toggleColor()
-
-        self.movePieceAuto("a8", "a6")
-        self.movePieceAuto("b8", "b6")
-        self.movePieceAuto("c8", "c6")
-        self.movePieceAuto("d8", "d6")
-        #self.movePieceAuto("e8", "e6")
-        self.movePieceAuto("f8", "f6")
-        self.movePieceAuto("g8", "g6")
-        #self.movePieceAuto("h8", "h6")
-
     def setAlarmLightOn(self):
         self.alarmLight.setColor((.7, 0, .1, 1))
 
@@ -390,8 +376,6 @@ class ChessGame(ShowBase):
                 self.pieces[self.dragging].obj.setPos(
                     SquarePos(self.dragging))
 
-                self.movePieceBlackCastle("e8", "g8")
-
             else:
                 # Piece has moved to a valid square
                 # Check if we have moved to a square with a piece on it already
@@ -472,6 +456,22 @@ class ChessGame(ShowBase):
             self.movePieceAuto("a1", "d1")
         elif to == "g1":
             self.movePieceAuto("h1", "f1")
+
+    def movePieceCheckmateAuto(self, fr, to):
+
+        frNew = convertSquare(fr)
+        KillerColor = self.pieces[frNew].PieceColor
+        KillerName = self.pieces[frNew].PieceName
+        KilledName = "King"
+
+        self.movePieceAuto(fr, to)
+
+        CaptureVideo = KillerColor + KillerName + "K" + KilledName
+        if CaptureVideo in self.videos:
+            self.videos[CaptureVideo].preview(fps=24)
+            pygame.quit()
+        else:
+            print("Video not yet made")
 
 
     # This function sets up some default lighting

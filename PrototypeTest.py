@@ -31,7 +31,7 @@ if board.isValidMove:
 
     # Move pieces
     # White move
-    elif currentColor == 0:
+    if currentColor == 0:
         if board.whitecastled:
             print('White king castled')
         else:
