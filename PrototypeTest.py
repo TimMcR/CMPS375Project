@@ -31,13 +31,19 @@ if board.isValidMove:
 
     # Move pieces
     # White move
-    elif currentColor == 0:
-        print('Move white piece')
-        # movePiecesAuto(startSquare, endSquare)
+    if currentColor == 0:
+        if board.whitecastled:
+            print('White king castled')
+        else:
+            print('Move white piece')
+            # movePiecesAuto(startSquare, endSquare)
 
     elif currentColor == 1:
-        print('Move black piece')
-        # movePiecesAuto(startSquare, endSquare)
+        if board.blackcastled:
+            print('Black king castled')
+        else:
+            print('Move black piece')
+            # movePiecesAuto(startSquare, endSquare)
 
 # Move was invalid
 else:

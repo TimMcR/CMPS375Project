@@ -59,8 +59,39 @@ def runGameWithCamera():
                 # If move is valid then move pieces
                 print("Move was valid, proceed")
 
-                # Piece move code to write
-                # If a castling move was made, move both rook and king
+                currentColor = board.blackorwhite
+
+                startSquare = board.str[0:2]
+                endSquare = board.str[2:4]
+
+                # Check for preliminary conditions
+                if board.isCheck:
+                    print('King is in danger')
+                    game.setAlarmLightOn()
+
+                else:
+                    game.setAlarmLightOff()
+
+                if board.isCheckMate:
+                    print('King has been captured')
+                    game.movePieceCheckmateAuto(startSquare, endSquare)
+
+
+                else:
+                    # White has made a move
+                    if currentColor == 0:
+                        if board.whitecastled:
+                            game.movePieceWhiteCastle(startSquare, endSquare)
+                        else:
+                            game.movePieceAuto(startSquare, endSquare)
+
+                    # Black has made a move
+                    elif currentColor == 1:
+                        if board.blackcastled:
+                            game.movePieceCheckmateAuto(startSquare, endSquare)
+                        else:
+                            game.movePieceAuto(startSquare, endSquare)
+
 
                 # Toggle color
                 game.toggleColor()
@@ -77,4 +108,4 @@ def runGameWithMouse():
 
 # Main game code
 setupVideos()
-runGameWithCamera()
+runGameWithMouse()

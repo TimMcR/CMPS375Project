@@ -1,6 +1,4 @@
 # TODO check if a valid move mas been made
-# TODO write checkmateMoveAuto code
-# TODO write castle move swap code
 
 # Original Tutorial Author: Shao Zhang and Phil Saltzman
 # Chess Piece Models By Kanjiklub:
@@ -82,9 +80,9 @@ def convertSquare(inputString):
     elif letter == "f":
         square += 5
     elif letter == "g":
-        square += 7
+        square += 6
     elif letter == "h":
-        square += 8
+        square += 7
 
     square += (8 * (num - 1))
     return square
@@ -420,7 +418,7 @@ class ChessGame(ShowBase):
 
         # Either we have let go of the piece but we are not on a square,
         # or we have tried to move a piece when it is not their turn
-        if to is False or CorrectColor is False:
+        if CorrectColor is False:
             # Return piece to previous square
             self.pieces[fr].obj.setPos(
                 SquarePos(fr))
@@ -444,6 +442,37 @@ class ChessGame(ShowBase):
                 else:
                     DragPiece.obj.setPos(
                         SquarePos(fr))
+
+    def movePieceBlackCastle(self, fr, to):
+        self.movePieceAuto(fr, to)
+        if to == "c8":
+            self.movePieceAuto("a8", "d8")
+        elif to == "g8":
+            self.movePieceAuto("h8", "f8")
+
+    def movePieceWhiteCastle(self,fr, to):
+        self.movePieceAuto(fr, to)
+        if to == "c1":
+            self.movePieceAuto("a1", "d1")
+        elif to == "g1":
+            self.movePieceAuto("h1", "f1")
+
+    def movePieceCheckmateAuto(self, fr, to):
+
+        frNew = convertSquare(fr)
+        KillerColor = self.pieces[frNew].PieceColor
+        KillerName = self.pieces[frNew].PieceName
+        KilledName = "King"
+
+        self.movePieceAuto(fr, to)
+
+        CaptureVideo = KillerColor + KillerName + "K" + KilledName
+        if CaptureVideo in self.videos:
+            self.videos[CaptureVideo].preview(fps=24)
+            pygame.quit()
+        else:
+            print("Video not yet made")
+
 
     # This function sets up some default lighting
     def setupLights(self):
