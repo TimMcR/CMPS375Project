@@ -15,9 +15,9 @@ from imutils import contours
 import numpy as np
 
 # Load image, grayscale, and adaptive threshold
-image = cv2.imread('devImages\inkedCroppedBoardSmallSample.jpg')
+image = cv2.imread('devImages\croppedRealBoard3.png')
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-thresh = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,2)
+thresh = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,12)
 
 # Filter out all noise to isolate only boxes
 cnts = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -43,42 +43,32 @@ chess_rows = []
 row = []
 for (i, c) in enumerate(cnts, 1):
     area = cv2.contourArea(c)
-    if area < 50000:
-        row.append(c)
-        if i % 9 == 0:  
-            (cnts, _) = contours.sort_contours(row, method="left-to-right")
-            chess_rows.append(cnts)
-            row = []
+    if area < 30000:
+        if area > 5000:
+            row.append(c)
+            if i % 9 == 0:  
+                (cnts, _) = contours.sort_contours(row, method="left-to-right")
+                chess_rows.append(cnts)
+                row = []
 
 # Image detection within box
-sqList = [[image]*8]*8
-sqLT = 0
-sqLC = 0
+compositeResult = np.zeros(image.shape, dtype=np.uint8)
+temps = ["templates\pawn.png", "templates\king.png", "templates\knight.png", "templates\qbishop.png", "templates\qrook.png", "templates\queen.png"]
+oList = [[0]*8]*8
+
 for row in chess_rows:
     for c in row:
         mask = np.zeros(image.shape, dtype=np.uint8)
         cv2.drawContours(mask, [c], -1, (255,255,255), -1)
         result = cv2.bitwise_and(image, mask)
         result[mask==0] = 255
-        if (sqLC > 7):
-            sqLC = 0
-            sqLT += 1
-        if (sqLT != 8):
-            sqList[sqLC][7 - sqLT]
-            sqLC += 1
-        #cv2.imshow('result', result)
-        #cv2.waitKey(175)
-temps = ["templates\pawn.jpg", "templates\king.jpg", "templates\knight.jpg", "templates\qbishop.jpg", "templates\qrook.jpg", "templates\queen.jpg"]
-oList = [[0]*8]*8
-for x in range(len(oList)):
-    for y in range(len(oList[x])):
-        for t in range(len(temps)):
-            temp = cv2.imread(temps[t])
-            res = cv2.matchTemplate(sqList[x][y], temp, cv2.TM_CCOEFF_NORMED)
-            if (np.amax(res) >= 0.8):
-                oList[x][y] = 1
-
-cv2.imshow('thresh', thresh)
-cv2.imshow('invert', invert)
-cv2.waitKey()
-print(str(oList))
+        cv2.imshow('result', result)
+        compositeResult = compositeResult + result
+        cv2.waitKey(200)
+        cv2.destroyAllWindows
+cv2.imshow('Composite Result', compositeResult)
+cv2.waitKey(0)
+cv2.imwrite('imageOut\Othresh.png', thresh)
+cv2.imwrite('imageOut\invert.png', invert)
+cv2.imwrite('imageOut\detectedThird11and12.png', compositeResult)
+#print(str(oList))
