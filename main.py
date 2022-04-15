@@ -1,24 +1,9 @@
 # TODO import other libraries when ready
-# TODO set up push-button to toggle game pause
-
-# Import libraries for GPIO and USB Camera
-import subprocess
-from PIL import Image
-#import RPi.GPIO as GPIO
-
-import ChessEngine as eng
-import theboard as brd
-#import boardReader as cv
+# TODO set up bluetooth serial connection
 
 # Create new instance of the chess game
+import ChessEngine as eng
 game = eng.ChessGame()
-board = brd.Board()
-
-# Assign the button to pin 10
-# Un-comment when running on pi
-#GPIO.setwarnings(False)
-#GPIO.setmode(GPIO.BOARD)
-#GPIO.setup(10, GPIO.IN, pull_up_down= GPIO.PUD_DOWN)
 
 # If we want to load the videos then run setUpMenuWait then setupVideos
 # Otherwise just load setupMenuReady
@@ -30,68 +15,45 @@ def setupVideos():
 def setupNoVideos():
     game.setupMenuReady()
 
+# method is running with old unusable logic
 def runGameWithCamera():
-    currentButtonState = False
-
     # Main game loop
     while True:
-        # If the button is pressed
-        lastButtonState = currentButtonState
-        #if GPIO.input(10) == GPIO.HIGH:
-        #    currentButtonState = True
-        #else:
-        #    currentButtonState = False
-
-        toggle = lastButtonState and not currentButtonState
-
-        if toggle:
-            # Take picture
-            imgPath = '/home/pi/Desktop/NewImage.jpg'
-            subprocess.call('fswebcam -r 1280x1280 ' + imgPath, shell=True)
-
-            # Send picture to opencv and determine piece positions
-            positions = cv.read()
-
-            # Send positions to board library
-            board.checkMove(positions)
-
-            if board.invalidmove == 0:
+        if mapper.updated():
+            if mapper.getValidMove():
                 # If move is valid then move pieces
                 print("Move was valid, proceed")
 
-                currentColor = board.blackorwhite
-
-                startSquare = board.str[0:2]
-                endSquare = board.str[2:4]
+                currentColor = mapper.getColor()
+                startSquare = mapper.getStartSquare()
+                endSquare = mapper.getEndSquare()
 
                 # Check for preliminary conditions
-                if board.isCheck:
+                if mapper.getCheck():
                     print('King is in danger')
                     game.setAlarmLightOn()
 
                 else:
                     game.setAlarmLightOff()
 
-                if board.isCheckMate:
+                if mapper.getCheckMate():
                     print('King has been captured')
                     game.movePieceCheckmateAuto(startSquare, endSquare)
 
-
                 else:
                     # White has made a move
-                    if currentColor == 0:
-                        if board.whitecastled:
+                    if currentColor == 'White':
+                        if mapper.getWhiteCastled():
                             game.movePieceWhiteCastle(startSquare, endSquare)
                         else:
                             game.movePieceAuto(startSquare, endSquare)
 
                     # Black has made a move
-                    elif currentColor == 1:
-                        if board.blackcastled:
+                    else:
+                        if mapper.getBlackCastled():
                             game.movePieceCheckmateAuto(startSquare, endSquare)
                         else:
                             game.movePieceAuto(startSquare, endSquare)
-
 
                 # Toggle color
                 game.toggleColor()
@@ -99,13 +61,11 @@ def runGameWithCamera():
                 # If move is invalid try again
                 print("Move was invalid, try again")
 
-            #game.movePieceAuto("a1", "a3")
-
         game.step()
 
 def runGameWithMouse():
     game.run()
 
 # Main game code
-setupVideos()
+setupNoVideos()
 runGameWithMouse()

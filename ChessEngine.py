@@ -100,6 +100,7 @@ class ChessGame(ShowBase):
         ShowBase.__init__(self)
 
         self.props = WindowProperties()
+        self.alarmLight = DirectionalLight("alarmLight")
 
         self.accept('escape', sys.exit)  # Escape quits
         self.videos = {}
