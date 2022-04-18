@@ -1,9 +1,12 @@
-# TODO import other libraries when ready
-# TODO set up bluetooth serial connection
+import ChessEngine as eng
+import JSON_Mapper as j
 
 # Create new instance of the chess game
-import ChessEngine as eng
 game = eng.ChessGame()
+
+# Create data mapper to read json file from the PI
+mapper = j.Mapper()
+
 
 # If we want to load the videos then run setUpMenuWait then setupVideos
 # Otherwise just load setupMenuReady
@@ -12,14 +15,17 @@ def setupVideos():
     game.setupMenuWait()
     game.setupVideos()
 
+
 def setupNoVideos():
     game.setupMenuReady()
+
 
 # method is running with old unusable logic
 def runGameWithCamera():
     # Main game loop
     while True:
-        if mapper.updated():
+        mapper.getData()
+        if mapper.isUpdated():
             if mapper.getValidMove():
                 # If move is valid then move pieces
                 print("Move was valid, proceed")
@@ -63,8 +69,10 @@ def runGameWithCamera():
 
         game.step()
 
+
 def runGameWithMouse():
     game.run()
+
 
 # Main game code
 setupNoVideos()
