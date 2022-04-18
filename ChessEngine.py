@@ -28,6 +28,7 @@ from moviepy.editor import *
 import pygame
 import sys
 
+
 # Now we define some helper functions that we will need later
 
 # This function, given a line (vector plus origin point) and a desired z value,
@@ -35,13 +36,15 @@ import sys
 # This is how we know where to position an object in 3D space based on a 2D mouse
 # position. It also assumes that we are dragging in the XY plane.
 
-# This is derived from the mathematical of a plane, solved for a given point
+# This is derived from the calculations of a plane, solved for a given point
 def PointAtZ(z, point, vec):
     return point + vec * ((z - point.getZ()) / vec.getZ())
+
 
 # A handy little function for getting the proper position for a given square1
 def SquarePos(i):
     return LPoint3((i % 8) - 3.5, int(i // 8) - 3.5, 0)
+
 
 # Helper function for determining whether a square should be white or black
 # The modulo operations (%) generate the every-other pattern of a chess-board
@@ -50,6 +53,7 @@ def SquareColor(i):
         return SQUAREBLACK
     else:
         return SQUAREWHITE
+
 
 def CenterPos(Start, End, z):
     startX = Start.getX()
@@ -60,32 +64,38 @@ def CenterPos(Start, End, z):
     newY = (startY + endY) / 2
     return LPoint3(newX, newY, z)
 
+
 def convertRGB(red, green, blue):
-    return (red / 255, green / 255, blue / 255, 1)
+    return red / 255, green / 255, blue / 255, 1
+
 
 def convertSquare(inputString):
     square = 0
     letter = inputString[0]
     num = int(inputString[1])
-    if letter == "a":
+    if letter == "a" or letter == "A":
         square += 0
-    elif letter == "b":
+    elif letter == "b" or letter == "B":
         square += 1
-    elif letter == "c":
+    elif letter == "c" or letter == "C":
         square += 2
-    elif letter == "d":
+    elif letter == "d" or letter == "D":
         square += 3
-    elif letter == "e":
+    elif letter == "e" or letter == "E":
         square += 4
-    elif letter == "f":
+    elif letter == "f" or letter == "F":
         square += 5
-    elif letter == "g":
+    elif letter == "g" or letter == "G":
         square += 6
-    elif letter == "h":
+    elif letter == "h" or letter == "H":
         square += 7
+    else:
+        # If input formatting is incorrect
+        return None
 
     square += (8 * (num - 1))
     return square
+
 
 # Colors
 SQUAREBLACK = convertRGB(139, 69, 16)
@@ -94,6 +104,7 @@ HIGHLIGHT1 = convertRGB(0, 255, 255)
 HIGHLIGHT2 = convertRGB(255, 0, 255)
 PIECEBLACK = convertRGB(61, 43, 31)
 PIECEWHITE = convertRGB(253, 245, 230)
+
 
 class ChessGame(ShowBase):
     def __init__(self):
@@ -105,7 +116,7 @@ class ChessGame(ShowBase):
         self.accept('escape', sys.exit)  # Escape quits
         self.videos = {}
 
-        #self.imageScreen()
+        # self.imageScreen()
 
     def step(self):
         self.taskMgr.step()
@@ -113,7 +124,7 @@ class ChessGame(ShowBase):
     def fullscreen(self):
         w, h = 1920, 1080
         self.props.setSize(w, h)
-        #self.props.setFullscreen(True)
+        # self.props.setFullscreen(True)
         self.win.requestProperties(self.props)
 
     def imageScreen(self):
@@ -209,7 +220,7 @@ class ChessGame(ShowBase):
         self.table.setTexGen(TextureStage.getDefault(), TexGenAttrib.MWorldPosition)
         self.table.setTexProjector(TextureStage.getDefault(), render, self.table)
         self.table.reparentTo(self.squareRoot)
-        #self.table.setPos(0, 0, -.1)
+        # self.table.setPos(0, 0, -.1)
 
         for i in range(64):
             # Load, parent, color, and position the model (a single square
@@ -262,14 +273,13 @@ class ChessGame(ShowBase):
         self.accept("mouse1", self.grabPiece)  # left-click grabs a piece
         self.accept("mouse1-up", self.releasePiece)  # releasing places it
 
-        #self.fullscreen()
+        # self.fullscreen()
 
     def setAlarmLightOn(self):
         self.alarmLight.setColor((.7, 0, .1, 1))
 
     def setAlarmLightOff(self):
         self.alarmLight.setColor((0, 0, 0, 1))
-
 
     # This function swaps the positions of two pieces
     def swapPieces(self, fr, to):
@@ -435,7 +445,7 @@ class ChessGame(ShowBase):
                 DragPiece.runAnimation(startPosition, endPosition)
 
                 self.swapPieces(fr, to)
-                #self.WhiteTurn = not self.WhiteTurn
+                # self.WhiteTurn = not self.WhiteTurn
             else:
                 if DragPiece.PieceColor is not HitPiece.PieceColor:
                     self.capturePieces(fr, to)
@@ -451,7 +461,7 @@ class ChessGame(ShowBase):
         elif to == "g8":
             self.movePieceAuto("h8", "f8")
 
-    def movePieceWhiteCastle(self,fr, to):
+    def movePieceWhiteCastle(self, fr, to):
         self.movePieceAuto(fr, to)
         if to == "c1":
             self.movePieceAuto("a1", "d1")
@@ -473,7 +483,6 @@ class ChessGame(ShowBase):
             pygame.quit()
         else:
             print("Video not yet made")
-
 
     # This function sets up some default lighting
     def setupLights(self):
