@@ -4,9 +4,11 @@ import JSON_Mapper as j
 # Create new instance of the chess game
 game = eng.ChessGame()
 
-# Create data mapper to read json file from the PI
+# Create data mapper to write to the JSON file from the PI
+# Make sure url is correct before running
+url = 'http://192.168.1.23:8000/chessInfo.json'
 mapper = j.Mapper()
-
+mapper.setURL(url)
 
 # If we want to load the videos then run setUpMenuWait then setupVideos
 # Otherwise just load setupMenuReady

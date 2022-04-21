@@ -12,7 +12,10 @@ import JSON_Mapper as j
 board = brd.Board()
 
 # Create data mapper to write to the JSON file from the PI
+# Make sure url is correct before running
+url = 'http://192.168.1.23:8000/chessInfo.json'
 mapper = j.Mapper()
+mapper.setURL(url)
 
 # Button input
 GPIO.setwarnings(False)

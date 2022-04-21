@@ -3,29 +3,26 @@ import requests
 import json
 
 params = dict(
-    validMove='True',
+    validMove=True,
     currColor='White',
     startSquare='A1',
     endSquare='B1',
-    check='False',
-    checkmate='False',
-    whiteCastled='False',
-    blackCastled='False'
+    check=False,
+    checkmate=False,
+    whiteCastled=False,
+    blackCastled=False
 )
 
-url = 'http://10.176.148.111:8000/chessInfo.json'
-
-
 class Mapper():
-    def __int__(self):
+    def __int__(self, newURL):
         self.prevSquare = ""
         self.data = params
 
+    def setURL(self, newURL):
+        self.url = newURL
+
     def update(self, board):
-        if board.isValidMove:
-            self.data['ValidMove'] = 'True'
-        else:
-            self.data['ValidMove'] = 'False'
+        self.data['ValidMove'] = board.isValidMove
 
         if board.blackorwhite == 0:
             self.data['currColor'] = 'White'
@@ -35,25 +32,13 @@ class Mapper():
         self.data['startSquare'] = board.str[0:2]
         self.data['endSquare'] = board.str[2:4]
 
-        if board.isCheck:
-            self.data['check'] = 'True'
-        else:
-            self.data['check'] = 'False'
+        self.data['check'] = board.isCheck
 
-        if board.isCheckMate:
-            self.data['checkmate'] = 'True'
-        else:
-            self.data['checkmate'] = 'False'
+        self.data['checkmate'] = board.isCheckMate
 
-        if board.whitecastled:
-            self.data['whiteCastled'] = 'True'
-        else:
-            self.data['whiteCastled'] = 'False'
+        self.data['whiteCastled'] = board.whitecastled
 
-        if board.blackcastled:
-            self.data['blackCastled'] = 'True'
-        else:
-            self.data['blackCastled'] = 'False'
+        self.data['blackCastled'] = board.blackcastled
 
         json_object = json.dumps(self.data, indent=4)
 
@@ -61,7 +46,7 @@ class Mapper():
             outfile.write(json_object)
 
     def getData(self):
-        resp = requests.get(url=url, params=params)
+        resp = requests.get(url=self.url, params=params)
         self.data = resp.json()
 
     def isUpdated(self):
@@ -72,10 +57,7 @@ class Mapper():
             return False
 
     def getValidMove(self):
-        if self.data['validMove'] == 'True':
-            return True
-        else:
-            return False
+        return self.data['validMove']
 
     def getColor(self):
         return self.data['currColor']
@@ -87,21 +69,13 @@ class Mapper():
         return self.data['endSquare']
 
     def getCheck(self):
-        if self.data['check'] == 'True':
-            return True
-        return False
+        return self.data['check']
 
     def getCheckMate(self):
-        if self.data['checkmate'] == 'True':
-            return True
-        return False
+        return self.data['checkmate']
 
     def getWhiteCastled(self):
-        if self.data['whiteCastled'] == 'True':
-            return True
-        return False
+        return self.data['whiteCastled']
 
     def getBlackCastled(self):
-        if self.data['blackCastled'] == 'True':
-            return True
-        return False
+        return self.data['blackCastled']
