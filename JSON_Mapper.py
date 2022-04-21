@@ -13,6 +13,7 @@ params = dict(
     blackCastled=False
 )
 
+
 class Mapper():
     def __int__(self, newURL):
         self.prevSquare = ""
