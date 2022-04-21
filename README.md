@@ -1,6 +1,6 @@
 # Chess 2: It's Chess, but fun!
 ## Click to watch trailer
-[![VIDEO LINK](http://img.youtube.com/vi/os8Wp1nwBjk/0.jpg)](https://www.youtube.com/watch?v=os8Wp1nwBjk)
+[![VIDEO LINK](http://img.youtube.com/vi/9waTXbc2xNk.jpg)](https://youtu.be/9waTXbc2xNk)
 ## Description
 Chess 2 is a combination of the classic game and a comedic 3D animation style. 
 A chess board is monitored by a camera while two people play a game. 
