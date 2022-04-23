@@ -16,7 +16,7 @@ import numpy as np
 # +++++++Cropping game board from image+++++++
 # ++++++++++++++++++++++++++++++++++++++++++++
 # Load image, grayscale, and adaptive threshold
-image = cv2.imread('devImages\decroppedBoard.png')
+image = cv2.imread('NewImage.jpg')
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 thresh = cv2.adaptiveThreshold(gray,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,12)
 cnts = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
