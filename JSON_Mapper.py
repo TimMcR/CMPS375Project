@@ -15,8 +15,9 @@ params = dict(
 
 
 class Mapper():
-    def __int__(self, newURL):
+    def __int__(self):
         self.prevSquare = ""
+        self.url = ""
         self.data = params
 
     def setURL(self, newURL):
