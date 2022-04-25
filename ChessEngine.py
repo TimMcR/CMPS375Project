@@ -151,6 +151,12 @@ class ChessGame(ShowBase):
         for i in range(0, 3):
             self.step()
 
+    def showBlackWinScreen(self):
+        self.winImage = OnscreenImage(image="images/Black_Wins.png", scale=1)
+
+    def showWhiteWinScreen(self):
+        self.winImage = OnscreenImage(image="images/White_Wins.png", scale=1)
+
     def setupMenuReady(self):
         self.setupMenuWait()
         self.showMenuButton()

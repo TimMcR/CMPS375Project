@@ -30,7 +30,7 @@ def runGameWithCamera():
         if mapper.isUpdated():
             if mapper.getValidMove():
                 # If move is valid then move pieces
-                print("Move was valid, proceed")
+                print('Move was valid, proceed')
 
                 currentColor = mapper.getColor()
                 startSquare = mapper.getStartSquare()
@@ -47,20 +47,28 @@ def runGameWithCamera():
                 if mapper.getCheckMate():
                     print('King has been captured')
                     game.movePieceCheckmateAuto(startSquare, endSquare)
+                    if currentColor == 'White':
+                        game.showWhiteWinScreen()
+                    else:
+                        game.showBlackWinScreen()
 
                 else:
                     # White has made a move
                     if currentColor == 'White':
                         if mapper.getWhiteCastled():
+                            print('White King has castled')
                             game.movePieceWhiteCastle(startSquare, endSquare)
                         else:
+                            print('White has moved')
                             game.movePieceAuto(startSquare, endSquare)
 
                     # Black has made a move
                     else:
                         if mapper.getBlackCastled():
+                            print('Black King has castled')
                             game.movePieceCheckmateAuto(startSquare, endSquare)
                         else:
+                            print('Black has moved')
                             game.movePieceAuto(startSquare, endSquare)
 
                 # Toggle color
